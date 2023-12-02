@@ -6,6 +6,7 @@
 #include "Components/CanvasPanelSlot.h"
 #include "UMG/Public/Components/Image.h"
 #include "UMG/Public/Components/SizeBox.h"
+#include "UMG/public/Blueprint/WidgetLayoutLibrary.h"
 #include "Engine/Classes/Materials/MaterialInstanceDynamic.h"
 
 UUniversalWidgetFunctionLibrary::UUniversalWidgetFunctionLibrary()
@@ -16,7 +17,7 @@ FVector2D UUniversalWidgetFunctionLibrary::GetParentLocation(UWidget* Widget)
 {
 	if (Widget)
 	{
-		return Widget->GetParent()->GetPaintSpaceGeometry().GetLocalPositionAtCoordinates({ 0.0,0.0 });
+		return Widget->GetPaintSpaceGeometry().GetLocalPositionAtCoordinates({ 0.0,0.0 });
 	}
 	return FVector2D();
 }
@@ -24,36 +25,38 @@ FVector2D UUniversalWidgetFunctionLibrary::GetParentLocation(UWidget* Widget)
 FVector2D UUniversalWidgetFunctionLibrary::GetAllParentLocation(UWidget* Widget)
 {
 	FVector2D Vector2D = { 0.0,0.0 };
-	if (Widget)
+	while (Widget)
 	{
-		Vector2D = Widget->GetPaintSpaceGeometry().GetLocalPositionAtCoordinates({ 0.0,0.0 });
-		UPanelWidget* PanelWidget = Widget->GetParent();
-		if (PanelWidget)
-		{
-			Vector2D += PanelWidget->GetPaintSpaceGeometry().GetLocalPositionAtCoordinates({ 0.0,0.0 });
-			while (PanelWidget)
-			{
-				Vector2D += PanelWidget->GetPaintSpaceGeometry().GetLocalPositionAtCoordinates({ 0.0,0.0 });
-				PanelWidget = PanelWidget->GetParent();
-			}
-		}
+		Vector2D += Widget->GetPaintSpaceGeometry().GetLocalPositionAtCoordinates({ 0.0,0.0 });
+		Widget = Widget->GetParent();
 	}
 	return Vector2D;
 }
 
-void UUniversalWidgetFunctionLibrary::SetWidgetPosition(UWidget* Widget, FVector2D Position)
+void UUniversalWidgetFunctionLibrary::SetWidgetPosition(UWidget* Widget, const FVector2D& Position)
 {
-	if (Widget->Slot)
+	if (Widget)
 	{
-		UCanvasPanelSlot* CanvasPanelSlot = Cast<UCanvasPanelSlot>(Widget->Slot);
-		if (CanvasPanelSlot)
+		if (Widget->Slot)
 		{
-			CanvasPanelSlot->SetPosition(Position);
+			UCanvasPanelSlot* CanvasPanelSlot = Cast<UCanvasPanelSlot>(Widget->Slot);
+			if (CanvasPanelSlot)
+			{
+				CanvasPanelSlot->SetPosition(Position);
+			}
+		}
+		else
+		{
+			UUserWidget* UserWidget = Cast<UUserWidget>(Widget);
+			if (UserWidget)
+			{
+				UserWidget->SetPositionInViewport(Position);
+			}
 		}
 	}
 }
 
-void UUniversalWidgetFunctionLibrary::SetWidgetSize(UWidget* Widget, FVector2D Size, USizeBox* SizeBox)
+void UUniversalWidgetFunctionLibrary::SetWidgetSize(UWidget* Widget, const FVector2D& Size, USizeBox* SizeBox)
 {
 	if (Widget->Slot)
 	{
@@ -70,7 +73,7 @@ void UUniversalWidgetFunctionLibrary::SetWidgetSize(UWidget* Widget, FVector2D S
 	}
 }
 
-void UUniversalWidgetFunctionLibrary::SetImageResource(UImage* Image, UObject* Resource, FName ParameterName)
+void UUniversalWidgetFunctionLibrary::SetImageResource(UImage* Image, UObject* Resource, const FString& ParameterName)
 {
 	if (Image && Resource)
 	{
@@ -79,7 +82,7 @@ void UUniversalWidgetFunctionLibrary::SetImageResource(UImage* Image, UObject* R
 			UMaterialInstanceDynamic* MaterialInstanceDynamic = Image->GetDynamicMaterial();
 			if (MaterialInstanceDynamic)
 			{
-				MaterialInstanceDynamic->SetTextureParameterValue(ParameterName, Cast<UTexture2D>(Resource));
+				MaterialInstanceDynamic->SetTextureParameterValue(*ParameterName, Cast<UTexture2D>(Resource));
 			}
 			else
 			{
@@ -91,4 +94,14 @@ void UUniversalWidgetFunctionLibrary::SetImageResource(UImage* Image, UObject* R
 			Image->SetBrushFromMaterial(Cast<UMaterialInstance>(Resource));
 		}
 	}
+}
+
+FVector2D UUniversalWidgetFunctionLibrary::GetMousePositionOnViewport(UObject* WorldContextObject)
+{
+	return UWidgetLayoutLibrary::GetMousePositionOnViewport(WorldContextObject);
+}
+
+FVector2D UUniversalWidgetFunctionLibrary::GetViewportSize(UObject* WorldContextObject)
+{
+	return UWidgetLayoutLibrary::GetViewportSize(WorldContextObject);
 }

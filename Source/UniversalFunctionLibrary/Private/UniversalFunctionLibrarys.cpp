@@ -23,6 +23,10 @@ UUniversalFunctionLibrarys::UUniversalFunctionLibrarys()
 
 TSoftClassPtr<UObject> UUniversalFunctionLibrarys::StringCastTSoftClassPtr(const FString& PathString)
 {
+	if (PathString.Len() > 22 && PathString.StartsWith("/Script/Engine.Blueprint") && PathString.EndsWith("_C'") == false)
+	{
+		return TSoftClassPtr<UObject>(StringCastTSoftClassPtr(PathString.Mid(0, PathString.Len() - 1) + "_C'"));
+	}
 	return TSoftClassPtr<UObject>(PathString);
 }
 
@@ -39,13 +43,13 @@ FSoftObjectPath UUniversalFunctionLibrarys::StringCastFSoftObjectPath(const FStr
 UClass* UUniversalFunctionLibrarys::StringLoadClassAsset(const FString& PathString)
 {
 	TSoftClassPtr<UObject> SoftClassPtr = StringCastTSoftClassPtr(PathString);
-	return SoftClassPtr.IsNull() && SoftClassPtr.Get() ? SoftClassPtr.Get() : SoftClassPtr.LoadSynchronous();
+	return SoftClassPtr.IsNull() && SoftClassPtr.IsValid() ? SoftClassPtr.Get() : SoftClassPtr.LoadSynchronous();
 }
 
 UObject* UUniversalFunctionLibrarys::StringLoadObjectAsset(const FString& PathString)
 {
 	TSoftObjectPtr<UObject> SoftObjectPtr = StringCastTSoftObjectPtr(PathString);
-	return SoftObjectPtr.IsNull() && SoftObjectPtr.Get() ? SoftObjectPtr.Get() : SoftObjectPtr.LoadSynchronous();
+	return SoftObjectPtr.IsNull() && SoftObjectPtr.IsValid() ? SoftObjectPtr.Get() : SoftObjectPtr.LoadSynchronous();
 }
 
 int UUniversalFunctionLibrarys::FindStringParseIndex(const FString& SourceString, const FString& FindString, const FString& SensitiveString, int Index)
@@ -56,7 +60,7 @@ int UUniversalFunctionLibrarys::FindStringParseIndex(const FString& SourceString
 	{
 		if (!SensitiveString.Equals("") && SensitiveString == SourceString.Mid(i, 1))
 		{
-			IgnoreIndex ++;
+			IgnoreIndex++;
 			continue;
 		}
 		if (FindString == SourceString.Mid(i, 1))
@@ -113,9 +117,9 @@ TArray<FString> UUniversalFunctionLibrarys::StringParseIntoArray(const FString& 
 			}
 			return Strings;
 		}
-		if(SourceString.Mid(i, 1) == "\"")
+		if (SourceString.Mid(i, 1) == "\"")
 		{
-			TIndex = FindStringParseIndex(SourceString,"\"","", i + 1); //SourceString.Find("\"", ESearchCase::IgnoreCase, ESearchDir::FromStart, i + 1);
+			TIndex = FindStringParseIndex(SourceString, "\"", "", i + 1); //SourceString.Find("\"", ESearchCase::IgnoreCase, ESearchDir::FromStart, i + 1);
 			if (TIndex != -1)
 			{
 				i = size_t(TIndex + 1);
@@ -127,7 +131,7 @@ TArray<FString> UUniversalFunctionLibrarys::StringParseIntoArray(const FString& 
 				}
 				return Strings;
 			}
-			Strings.Add(SourceString.Mid(Index, SourceString.Len()  - Index));
+			Strings.Add(SourceString.Mid(Index, SourceString.Len() - Index));
 			return Strings;
 		}
 		if (SourceString.Mid(i, 1) == "{")
@@ -158,7 +162,7 @@ TArray<FString> UUniversalFunctionLibrarys::StringParseIntoArray(const FString& 
 FString UUniversalFunctionLibrarys::GetIndexStringParseIntoArray(const FString& SourceString, int MaxIndex)
 {
 	TArray<FString> Strings = StringParseIntoArray(SourceString, MaxIndex);
-	return Strings.Num() > MaxIndex ? Strings[MaxIndex] : "Null";
+	return Strings.Num() > MaxIndex ? Strings[MaxIndex] : "";
 }
 
 TArray<FString> UUniversalFunctionLibrarys::StringParseIntoArrayLong(const FString& SourceString, int MaxIndex)
@@ -307,7 +311,12 @@ bool UUniversalFunctionLibrarys::PlayerCameraRay(AActor* Owner, FHitResult& OutH
 	{
 		const FVector Start = Owner->GetWorld()->GetFirstPlayerController()->PlayerCameraManager->GetCameraLocation();
 		const FVector End = Start + Owner->GetWorld()->GetFirstPlayerController()->PlayerCameraManager->GetActorForwardVector() * Distance;
-		return UKismetSystemLibrary::LineTraceSingle(Owner, Start, End, TraceTypeQuery, false, ActorsToIgnore, EDrawDebugTrace::ForOneFrame, OutHit, true);
+		if (UKismetSystemLibrary::LineTraceSingle(Owner, Start, End, TraceTypeQuery, false, ActorsToIgnore, EDrawDebugTrace::ForOneFrame, OutHit, true))
+		{
+			return true;
+		}
+		OutHit.Location = End;
+		return false;
 	}
 	return false;
 }
@@ -346,6 +355,8 @@ bool UUniversalFunctionLibrarys::IsClampLimitScopes(T Index, T Min, T Max)
 {
 	return Index >= Min && Index <= Max;
 }
+
+
 
 bool UUniversalFunctionLibrarys::IsClampLimitIntScopes(int Index, int Min, int Max)
 {
@@ -415,7 +426,38 @@ void UUniversalFunctionLibrarys::DestroyComponentAllChild(const USceneComponent*
 	}
 }
 
-FVector2D UUniversalFunctionLibrarys::StringToVector2D(FString SourceString)
+FVector UUniversalFunctionLibrarys::StringToVector(const FString& SourceString)
+{
+	FVector Vector;
+	/*TArray<FString> Strings = StringParseIntoArray(SourceString);
+	if (Strings.Num() > 2)
+	{
+		Vector.X = FCString::Atof(*Strings[0]);
+		Vector.Y = FCString::Atof(*Strings[1]);
+		Vector.Z = FCString::Atof(*Strings[2]);
+		return Vector;
+	}
+	SourceString.ParseIntoArray(Strings, *FString(" "), true);
+	if (Strings.Num() > 2)
+	{
+		Vector.X = FCString::Atof(*Strings[0].Mid(2, Strings[0].Len() - 2));
+		Vector.Y = FCString::Atof(*Strings[1].Mid(2, Strings[1].Len() - 2));
+		Vector.Z = FCString::Atof(*Strings[2].Mid(2, Strings[2].Len() - 2));
+		return Vector;
+	}
+	SourceString.ParseIntoArray(Strings, *FString("~"), true);
+	if (Strings.Num() > 2)
+	{
+		Vector.X = FCString::Atof(*Strings[0].Mid(2, Strings[0].Len() - 2));
+		Vector.Y = FCString::Atof(*Strings[1].Mid(2, Strings[1].Len() - 2));
+		Vector.Z = FCString::Atof(*Strings[2].Mid(2, Strings[2].Len() - 2));
+		return Vector;
+	} */
+	Vector.InitFromString(SourceString);
+	return Vector;
+}
+
+FVector2D UUniversalFunctionLibrarys::StringToVector2D(const FString& SourceString)
 {
 	FVector2D Vector2D;
 	TArray<FString> Strings = StringParseIntoArray(SourceString);
@@ -439,10 +481,11 @@ FVector2D UUniversalFunctionLibrarys::StringToVector2D(FString SourceString)
 		Vector2D.Y = FCString::Atof(*Strings[1].Mid(2, Strings[1].Len() - 2));
 		return Vector2D;
 	}
+	Vector2D.InitFromString(SourceString);
 	return Vector2D;
 }
 
-FVector2D UUniversalFunctionLibrarys::Vector2DSwapXY(FVector2D SwapVector2D)
+FVector2D UUniversalFunctionLibrarys::Vector2DSwapXY(const FVector2D& SwapVector2D)
 {
 	return FVector2D(SwapVector2D.Y, SwapVector2D.X);
 }
@@ -509,7 +552,7 @@ TArray<UActorComponent*> UUniversalFunctionLibrarys::GetActorComponentsByTag(con
 		return MoveTemp(ComponentsByTag);
 	}
 	Actor->GetComponents(UActorComponent::StaticClass(), ComponentsByClass); /** * 获取该Actor所有组件 */
-	ComponentsByTag.Reserve(Index = -1? ComponentsByClass.Num() : Index + 1);
+	ComponentsByTag.Reserve(Index = -1 ? ComponentsByClass.Num() : Index + 1);
 	for (UActorComponent* Component : ComponentsByClass)
 	{
 		if (Component->ComponentHasTag(Tag))
@@ -534,7 +577,77 @@ UActorComponent* UUniversalFunctionLibrarys::GetActorComponentByTag(const AActor
 	return nullptr;
 }
 
-/** 字符串异步加载 */	
+AController* UUniversalFunctionLibrarys::GetActorController(AActor* Actor)
+{
+	if (Actor == nullptr)
+	{
+		return nullptr;
+	}
+	APawn* Pawn = Cast<APawn>(Actor);
+	if (Pawn)
+		return Pawn->GetController();
+	return GetActorController(Actor->GetOwner());
+}
+
+APlayerController* UUniversalFunctionLibrarys::GetActorPlayerController(AActor* Actor)
+{
+	AController* Controller = GetActorController(Actor);
+	if (Controller)
+		return Cast<APlayerController>(Controller);
+	return nullptr;
+
+}
+
+bool UUniversalFunctionLibrarys::GetActorIsLocalPlayerController(AActor* Actor)
+{
+	APlayerController* PlayerController = GetActorPlayerController(Actor);
+	if (PlayerController)
+		return PlayerController->IsLocalController();
+	return false;
+}
+
+
+FString UUniversalFunctionLibrarys::StringsGet(TArray<FString>& Strings, int Index)
+{
+	return Strings.IsValidIndex(Index) ? Strings[Index] : FString();
+}
+
+FVector UUniversalFunctionLibrarys::FrontScopeRay(UObject* World, const FVector& Location, const FVector& Forward, const TEnumAsByte<ETraceTypeQuery>& TraceTypeQuerys, const TArray<AActor*>& ActorsToIgnore, float Distance, float DownDistance, float Scope, int Num)
+{
+	FHitResult OutHit;
+	if (World)
+	{
+		FVector PlayWorldLocation = Location + Forward * Distance;
+		if (UKismetSystemLibrary::LineTraceSingle(World, Location, PlayWorldLocation, TraceTypeQuerys, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, OutHit, true))
+		{
+			PlayWorldLocation = Location;
+		}
+		FVector DownWorldLocation;
+		FVector EndWorldLocation;
+		for (size_t i = 0; i < Num; i++)
+		{
+			DownWorldLocation.Y = PlayWorldLocation.Y - FMath::FRandRange(Scope * -1, Scope);
+			DownWorldLocation.X = PlayWorldLocation.X - FMath::FRandRange(Scope * -1, Scope);
+			DownWorldLocation.Z = PlayWorldLocation.Z;
+			if (UKismetSystemLibrary::LineTraceSingle(World, PlayWorldLocation, DownWorldLocation, TraceTypeQuerys, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, OutHit, true) == false)
+			{
+				EndWorldLocation = DownWorldLocation;
+				EndWorldLocation.Z = PlayWorldLocation.Z - DownDistance;
+				if (UKismetSystemLibrary::LineTraceSingle(World, DownWorldLocation, EndWorldLocation, TraceTypeQuerys, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, OutHit, true))
+				{
+					return OutHit.ImpactPoint;
+				}
+			}
+		}
+	}
+	if (UKismetSystemLibrary::LineTraceSingle(World, Location, { Location.X ,Location.Y, Location.Z - DownDistance * 10 }, TraceTypeQuerys, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, OutHit, true))
+	{
+		return OutHit.ImpactPoint;
+	}
+	return Location;
+}
+
+/** 字符串异步加载 */
 //void UUniversalFunctionLibrarys::StringAssetLoad(const FString& String, FStreamableDelegate StreamableDelegate)
 //{
 	//if(String != ""  && UAssetManager::Get().IsValid())
@@ -547,22 +660,6 @@ UActorComponent* UUniversalFunctionLibrarys::GetActorComponentByTag(const AActor
 /** 屏幕打印字符串 */
 void UUniversalFunctionLibrarys::PrintString(const UObject* Object, const FString& String, float Tim)
 {
-	if (Cast<AActor>(Object))
-	{
-		FString AppendString;
-		if (Cast<AActor>(Object)->HasAuthority())
-		{
-			AppendString = "Server: " + String;
-			UKismetSystemLibrary::PrintString(Object, AppendString, true, false, FColor::Blue, Tim);
-			return;
-		}
-		else
-		{
-			AppendString = "Client: " + String;
-			UKismetSystemLibrary::PrintString(Object, AppendString, true, false, FColor::Blue, Tim);
-			return;
-		}
-	}
 	UKismetSystemLibrary::PrintString(Object, String, true, false, FColor::Blue, Tim);
 }
 
@@ -580,40 +677,39 @@ void UUniversalFunctionLibrarys::CustomDelay(UObject* WorldContextObject, float 
 		Latentinfo.CallbackTarget = WorldContextObject;
 		Latentinfo.ExecutionFunction = *ExecutionFunction;
 		Latentinfo.Linkage = 0;
-		Latentinfo.UUID = 22;
+		Latentinfo.UUID = UKismetMathLibrary::RandomIntegerInRange(0, 222);
 		LatentActionManager.AddNewAction(WorldContextObject, Latentinfo.UUID, new FDelayAction(Duration, Latentinfo));
 
 	}
 }
 
-
-AActor* UUniversalFunctionLibrarys::SpawnActor(UClass* Class, FTransform const& Transform, AActor* Owner, APawn* Instigator)
+AActor* UUniversalFunctionLibrarys::SpawnActor(UObject* World, UClass* Class, const FVector& Location, const FQuat& Rotation, const FVector& Scale3D, AActor* Owner, APawn* Instigator)
 {
-	if (Owner && Class)
-	{
-		FActorSpawnParameters SpawnParameters;
-		SpawnParameters.Owner = Owner;
-		SpawnParameters.Instigator = Instigator;
-		return Owner->GetWorld()->SpawnActor<AActor>(Class, Transform, SpawnParameters);
-	}
-	return nullptr;
-}
-
-AActor* UUniversalFunctionLibrarys::SpawnActor(UClass* Class, FVector Location, FRotator Rotation, FVector Scale3D, AActor* Owner, APawn* Instigator)
-{
-	if (Owner)
+	if (World && Class)
 	{
 		FTransform Transform;
 		Transform.SetLocation(Location);
-		Transform.SetRotation(FQuat::MakeFromEuler({ Rotation.Pitch, Rotation.Yaw, Rotation.Roll }));
+		Transform.SetRotation(Rotation); //FQuat::MakeFromEuler({ Rotation.Pitch, Rotation.Yaw, Rotation.Roll })
 		Transform.SetScale3D(Scale3D);
 		FActorSpawnParameters SpawnParameters;
 		SpawnParameters.Owner = Owner;
 		SpawnParameters.Instigator = Instigator;
-		return Owner->GetWorld()->SpawnActor<AActor>(Class, Transform, SpawnParameters);
+		return World->GetWorld()->SpawnActor<AActor>(Class, Transform, SpawnParameters);
 	}
 	return nullptr;
 }
+
+AActor* UUniversalFunctionLibrarys::SpawnActor(UObject* World, UClass* Class, FTransform const& Transform, AActor* Owner, APawn* Instigator)
+{
+	return SpawnActor(World, Class, Transform.GetLocation(), Transform.GetRotation(), Transform.GetScale3D(), Owner, Instigator);
+}
+
+AActor* UUniversalFunctionLibrarys::SpawnActor(UObject* World, UClass* Class, const FVector& Location, const FRotator& Rotation, const FVector& Scale3D, AActor* Owner, APawn* Instigator)
+{
+	return SpawnActor(World, Class, Location, FQuat(Rotation), Scale3D, Owner, Instigator);
+}
+
+
 
 UDecalComponent* UUniversalFunctionLibrarys::SpawnDecalAtLocation(AActor* Owner, UMaterialInstance* MaterialInstance, FVector Location, FRotator Rotation, FVector Scale3D, float LifeSpan, float FadeScreeSize)
 {
