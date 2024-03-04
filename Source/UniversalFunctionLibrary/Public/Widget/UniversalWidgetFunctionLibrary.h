@@ -43,7 +43,7 @@ public:
 
 	/** 获取鼠标位置 */
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Wdiget")
-	static FVector2D GetMousePositionOnViewport(UObject* WorldContextObject);
+	static FVector2D GetMousePositionOnViewport(UObject* WorldContextObject, bool bViewportScale = false);
 
 	/** 获取视口位置 */
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Wdiget")

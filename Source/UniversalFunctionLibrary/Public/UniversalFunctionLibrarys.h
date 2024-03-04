@@ -70,13 +70,17 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Aimo|Static|StringParse")
 	static TArray<int> FindBeginStrings(const TArray<FString>& Strings, const FString& SourceString);
 
-	/** 解析字符串,分隔符号支持 , ; " { } */
+	/** 附加可解析字符串 */
 	UFUNCTION(BlueprintPure, Category = "Aimo|Static|StringParse")
 	static FString AppendParseString(const FString& NameString, const FString& DataString);
 
-	/** 解析字符串,分隔符号支持 , ; " { } */
+	/** 附加可解析字符串组 */
 	UFUNCTION(BlueprintPure, Category = "Aimo|Static|StringParse")
 	static FString AppendParseStrings(const FString& NameString, const FString& DataNameString, const FString& DataString, bool ChildAppendParse = true);
+
+	/** 附加可解析字符串组 */
+	UFUNCTION(BlueprintPure, Category = "Aimo|Static|StringParse")
+	static int SetStringsDataString(TArray<FString>& Strings, const FString& DataNameString, const FString& DataString, const FString& Cmd = "Set");
 
 	/** 返回时间字符串,分隔符号( , ),可选结尾分号 */
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|String")
@@ -171,10 +175,29 @@ public:
 	/** 获取字符串组有效值 */
 	static FString StringsGet(TArray<FString>& Strings, int Index = 0);
 
+	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
+	static TArray<FString> GetStringsScopes(const TArray<FString>& Strings, int Index = 0, int EndIndex = -1);
+
+	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
+	static TArray<FName> StringsToNames(const TArray<FString>& Strings);
+
+	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
+	static TArray<FString> NamesToStrings(const TArray<FName>& Strings);
+
+	/** 获取该Actor玩家控制器是否本地 */
+	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
+	static int GetNameStringsIndex(TArray<FNameStrings>& NameStringsArray, const FString& Name);
+
+	/** 设置NameStringsArray Cmd: Set,SetAll,Add,AddU,Remove,RemoveAll */
+	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
+	static int SetNameStringsArray(TArray<FNameStrings>& NameStringsArray, const FString& Name, const FString& String, const FString& Cmd = "Set");
 
 	/** 获取附近落地位置 */
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
 	static FVector FrontScopeRay(UObject* World, const FVector& Location, const FVector& Forward, const TEnumAsByte<ETraceTypeQuery>& TraceTypeQuerys, const TArray<AActor*>& ActorsToIgnore, float Distance = 100, float DownDistance = 200, float Scope = 80, int Num = 22);
+
+	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
+	static FVector2D GetXYClampSize(float X, float Y, float XMax, float YMax);
 
 	//#include "Runtime/Engine/Classes/Engine/AssetManager.h"  //异步加载资源的头文件 
 	//UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")

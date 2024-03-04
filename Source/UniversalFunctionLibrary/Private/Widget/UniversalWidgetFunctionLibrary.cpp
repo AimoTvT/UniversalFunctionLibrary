@@ -96,8 +96,12 @@ void UUniversalWidgetFunctionLibrary::SetImageResource(UImage* Image, UObject* R
 	}
 }
 
-FVector2D UUniversalWidgetFunctionLibrary::GetMousePositionOnViewport(UObject* WorldContextObject)
+FVector2D UUniversalWidgetFunctionLibrary::GetMousePositionOnViewport(UObject* WorldContextObject, bool bViewportScale)
 {
+	if (bViewportScale)
+	{
+		return  UWidgetLayoutLibrary::GetMousePositionOnViewport(WorldContextObject) * UWidgetLayoutLibrary::GetViewportScale(WorldContextObject);
+	}
 	return UWidgetLayoutLibrary::GetMousePositionOnViewport(WorldContextObject);
 }
 

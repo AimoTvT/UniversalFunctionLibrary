@@ -6,6 +6,7 @@
 #include "Kismet/KismetMathLibrary.h" //官方函数库
 #include "Kismet/KismetSystemLibrary.h" //官方函数库
 #include "Runtime/Engine/Public/DelayAction.h" //延迟的函数库
+#include "UniversalFunctionLibrary/Public/Config/UniversalStruct.h"
 
 //#include "Engine/Classes/Particles/ParticleSystem.h"  //粒子头文件
 #include "Engine/Classes/Components/DecalComponent.h" //贴花
@@ -254,19 +255,59 @@ TArray<int> UUniversalFunctionLibrarys::FindBeginStrings(const TArray<FString>& 
 
 FString UUniversalFunctionLibrarys::AppendParseString(const FString& NameString, const FString& DataString)
 {
-	return NameString + "," + DataString + ";";
+	return NameString + "," + DataString;
 }
 
 FString UUniversalFunctionLibrarys::AppendParseStrings(const FString& NameString, const FString& DataNameString, const FString& DataString, bool ChildAppendParse)
 {
 	if (ChildAppendParse)
 	{
-		return NameString + ",{" + AppendParseString(DataNameString, DataString) + "};";
+		return NameString + ",{" + AppendParseString(DataNameString, DataString) + "}";
 	}
 	else
 	{
-		return NameString + ",{" + DataNameString + DataString + "};";
+		return NameString + ",{" + DataNameString + DataString + "}";
 	}
+}
+
+int UUniversalFunctionLibrarys::SetStringsDataString(TArray<FString>& Strings, const FString& DataNameString, const FString& DataString, const FString& Cmd)
+{
+	int Index = FindBeginString(Strings, DataNameString);
+	if (Index != -1)
+	{
+		if (Cmd == "Set")
+		{
+			Strings[Index] = AppendParseString(DataNameString, DataString);
+		}
+		if (Cmd == "SetAll")
+		{
+			Strings[Index] = AppendParseString(DataNameString, DataString);
+		}
+		if (Cmd == "Add")
+		{
+			Strings[Index] = AppendParseString(Strings[Index], DataString);
+		}
+		if (Cmd == "AddU")
+		{
+			Strings[Index] = AppendParseString(Strings[Index], DataString);
+		}
+		if (Cmd == "Remove")
+		{
+			Strings.RemoveAt(Index);
+		}
+		if (Cmd == "RemoveAll")
+		{
+			Strings.RemoveAt(Index);
+		}
+	}
+	else
+	{
+		if (Cmd == "Set" || Cmd == "SetAll" || Cmd == "Add" || Cmd == "AddU")
+		{
+			Index = Strings.Add(AppendParseString(DataNameString, DataString));
+		}
+	}
+	return Index;
 }
 
 FString UUniversalFunctionLibrarys::GetNowTimerToString()
@@ -335,6 +376,10 @@ T UUniversalFunctionLibrarys::ClampLimitScopes(T Index, T Min, T Max, T& Indexes
 		Indexes = Index - Max;
 		return Max;
 	}
+	/*if (Index + Min > Max)
+	{
+		Indexes = Index + Min - Max;
+	}*/
 	Indexes = 0;
 	return Index;
 }
@@ -612,6 +657,115 @@ FString UUniversalFunctionLibrarys::StringsGet(TArray<FString>& Strings, int Ind
 	return Strings.IsValidIndex(Index) ? Strings[Index] : FString();
 }
 
+TArray<FString> UUniversalFunctionLibrarys::GetStringsScopes(const TArray<FString>& Strings, int Index, int EndIndex)
+{
+	TArray<FString> TStrings;
+	for (size_t i = Index; i < (EndIndex == -1 ? Strings.Num() : EndIndex); i++)
+	{
+		TStrings.Add(Strings[i]);
+	}
+	return TStrings;
+}
+
+TArray<FName> UUniversalFunctionLibrarys::StringsToNames(const TArray<FString>& Strings)
+{
+	TArray<FName> Names;
+	for (size_t i = 0; i < Strings.Num(); i++)
+	{
+		Names.Add(*Strings[i]);
+	}
+	return Names;
+}
+
+TArray<FString> UUniversalFunctionLibrarys::NamesToStrings(const TArray<FName>& Names)
+{
+	TArray<FString> Strings;
+	for (size_t i = 0; i < Names.Num(); i++)
+	{
+		Strings.Add(Names[i].ToString());
+	}
+	return Strings;
+}
+
+int UUniversalFunctionLibrarys::GetNameStringsIndex(TArray<FNameStrings>& NameStringsArray, const FString& Name)
+{
+	for (size_t i = 0; i < NameStringsArray.Num(); i++)
+	{
+		if (NameStringsArray[i].Name == Name)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+int UUniversalFunctionLibrarys::SetNameStringsArray(TArray<FNameStrings>& NameStringsArray, const FString& Name, const FString& String, const FString& Cmd)
+{
+	if (Name.Len() > 0)
+	{
+		return -1;
+	}
+	int Index = GetNameStringsIndex(NameStringsArray, Name);
+	if (Index != -1)
+	{
+		if (Cmd == "Set")
+		{
+			if (NameStringsArray[Index].Strings.Num())
+			{
+				NameStringsArray[Index].Strings[0] = String;
+				return Index;
+			}
+			if (Cmd == "Add")
+			{
+				NameStringsArray[Index].Strings.Add(String);
+				return Index;
+			}
+		}
+		if (Cmd == "SetAll")
+		{
+			if (String.Len())
+			{
+				String.ParseIntoArray(NameStringsArray[Index].Strings, *FString(";"));
+				return Index;
+				
+			}
+			if (Cmd == "RemoveAll")
+			{
+				NameStringsArray.RemoveAt(Index);
+				return -1;
+			}
+		}
+		if (Cmd == "AddU")
+		{
+			NameStringsArray[Index].Strings.AddUnique(String);
+			return Index;
+		}
+		if (Cmd == "Remove")
+		{
+			NameStringsArray[Index].Strings.Remove(String);
+			if (NameStringsArray[Index].Strings.Num())
+			{
+				return Index;
+			}
+			NameStringsArray.RemoveAt(Index);
+			return -1;
+		}
+		if (Cmd == "RemoveAll")
+		{
+			NameStringsArray.RemoveAt(Index);
+			return -1;
+		}
+	}
+	if (Cmd == "Add")
+	{
+		FNameStrings NameStrings;
+		NameStrings.Name = Name;
+		NameStrings.Strings.Add(String);
+		NameStringsArray.Add(NameStrings);
+	}	
+	return -1;
+}
+
 FVector UUniversalFunctionLibrarys::FrontScopeRay(UObject* World, const FVector& Location, const FVector& Forward, const TEnumAsByte<ETraceTypeQuery>& TraceTypeQuerys, const TArray<AActor*>& ActorsToIgnore, float Distance, float DownDistance, float Scope, int Num)
 {
 	FHitResult OutHit;
@@ -645,6 +799,30 @@ FVector UUniversalFunctionLibrarys::FrontScopeRay(UObject* World, const FVector&
 		return OutHit.ImpactPoint;
 	}
 	return Location;
+}
+
+FVector2D UUniversalFunctionLibrarys::GetXYClampSize(float X, float Y, float XMax, float YMax)
+{
+	if (X <= XMax)
+	{
+		if (Y <= YMax)
+		{
+			return FVector2D(X, Y);
+		}
+		else
+		{
+			return FVector2D(YMax / Y * X, YMax);
+		}
+	}
+	if (Y <= YMax)
+	{
+		return FVector2D(XMax, XMax / X * Y);
+	}
+	if (X / Y < XMax / YMax)
+	{
+		return FVector2D(X / Y * YMax, YMax);
+	}
+	return FVector2D(XMax, XMax / (X / Y));
 }
 
 /** 字符串异步加载 */
