@@ -92,7 +92,7 @@ TArray<FString> UUniversalFunctionLibrarys::StringParseIntoArray(const FString& 
 	}
 	for (size_t i = 0; i < SourceString.Len(); i++)
 	{
-		/** 检测空格,取消注释则开启 */
+		/** * 检测空格,取消注释则开启 */
 		/*if (SourceString.Mid(i, 1) == " ")
 		{
 			if (i == Index + 1 || i == Index)
@@ -825,7 +825,7 @@ FVector2D UUniversalFunctionLibrarys::GetXYClampSize(float X, float Y, float XMa
 	return FVector2D(XMax, XMax / (X / Y));
 }
 
-/** 字符串异步加载 */
+/** * 字符串异步加载 */
 //void UUniversalFunctionLibrarys::StringAssetLoad(const FString& String, FStreamableDelegate StreamableDelegate)
 //{
 	//if(String != ""  && UAssetManager::Get().IsValid())
@@ -835,13 +835,13 @@ FVector2D UUniversalFunctionLibrarys::GetXYClampSize(float X, float Y, float XMa
 //}
 
 
-/** 屏幕打印字符串 */
-void UUniversalFunctionLibrarys::PrintString(const UObject* Object, const FString& String, float Tim)
+/** * 屏幕打印字符串 */
+void UUniversalFunctionLibrarys::PrintString(const UObject* Object, const FString& String, float Tim, const FName Key)
 {
-	UKismetSystemLibrary::PrintString(Object, String, true, false, FColor::Blue, Tim);
+	UKismetSystemLibrary::PrintString(Object, String, true, false, FColor::Blue, Tim, Key);
 }
 
-/** 延迟时间,转接对应名字的函数 */
+/** * 延迟时间,转接对应名字的函数 */
 void UUniversalFunctionLibrarys::CustomDelay(UObject* WorldContextObject, float Duration, const FString& ExecutionFunction)
 {
 	if (!WorldContextObject)

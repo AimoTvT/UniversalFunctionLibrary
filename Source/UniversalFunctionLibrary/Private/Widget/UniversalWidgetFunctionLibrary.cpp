@@ -24,7 +24,7 @@ FVector2D UUniversalWidgetFunctionLibrary::GetParentLocation(UWidget* Widget)
 
 FVector2D UUniversalWidgetFunctionLibrary::GetAllParentLocation(UWidget* Widget)
 {
-	FVector2D Vector2D = { 0.0,0.0 };
+	FVector2D Vector2D = FVector2D(0.0f, 0.0f);
 	while (Widget)
 	{
 		Vector2D += Widget->GetPaintSpaceGeometry().GetLocalPositionAtCoordinates({ 0.0,0.0 });
@@ -64,12 +64,14 @@ void UUniversalWidgetFunctionLibrary::SetWidgetSize(UWidget* Widget, const FVect
 		if (CanvasPanelSlot)
 		{
 			CanvasPanelSlot->SetSize(Size);
+			return;
 		}
 	}
 	if (SizeBox)
 	{
 		SizeBox->SetWidthOverride(Size.X);
 		SizeBox->SetHeightOverride(Size.Y);
+		return;
 	}
 }
 
