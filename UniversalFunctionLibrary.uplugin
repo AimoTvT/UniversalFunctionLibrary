@@ -6,10 +6,11 @@
 	"Description": "通用的函数库",
 	"Category": "FunctionLibrary",
 	"CreatedBy": "Aimo_皑墨",
-	"CreatedByURL": "",
-	"DocsURL": "",
+	"CreatedByURL": "https://space.bilibili.com/146962867",
+	"DocsURL": "https://space.bilibili.com/146962867",
 	"MarketplaceURL": "",
-	"SupportURL": "",
+	"SupportURL": "mailto:2422489737@qq.com",
+	"EngineVersion": "5.3.0",
 	"CanContainContent": false,
 	"IsBetaVersion": true,
 	"IsExperimentalVersion": false,
@@ -18,7 +19,14 @@
 		{
 			"Name": "UniversalFunctionLibrary",
 			"Type": "Runtime",
-			"LoadingPhase": "PreLoadingScreen"
+			"LoadingPhase": "PreLoadingScreen",
+			"PlatformAllowList": [
+				"Win64",
+				"Android",
+				"Linux",
+				"Mac",
+				"IOS"
+			]
 		}
 	]
 }
