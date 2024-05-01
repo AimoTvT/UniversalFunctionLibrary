@@ -56,21 +56,21 @@ void UUniversalWidgetFunctionLibrary::SetWidgetPosition(UWidget* Widget, const F
 	}
 }
 
-void UUniversalWidgetFunctionLibrary::SetWidgetSize(UWidget* Widget, const FVector2D& Size, USizeBox* SizeBox)
+void UUniversalWidgetFunctionLibrary::SetWidgetSize(UWidget* Widget, const FVector2D& InSize, USizeBox* SizeBox)
 {
 	if (Widget->Slot)
 	{
 		UCanvasPanelSlot* CanvasPanelSlot = Cast<UCanvasPanelSlot>(Widget->Slot);
 		if (CanvasPanelSlot)
 		{
-			CanvasPanelSlot->SetSize(Size);
+			CanvasPanelSlot->SetSize(InSize);
 			return;
 		}
 	}
 	if (SizeBox)
 	{
-		SizeBox->SetWidthOverride(Size.X);
-		SizeBox->SetHeightOverride(Size.Y);
+		SizeBox->SetWidthOverride(InSize.X);
+		SizeBox->SetHeightOverride(InSize.Y);
 		return;
 	}
 }
@@ -111,3 +111,22 @@ FVector2D UUniversalWidgetFunctionLibrary::GetViewportSize(UObject* WorldContext
 {
 	return UWidgetLayoutLibrary::GetViewportSize(WorldContextObject);
 }
+
+TSoftClassPtr<UWidget> UUniversalWidgetFunctionLibrary::StringCastTSoftWidgetClassPtr(const FString& PathString)
+{
+	if (PathString.Len() > 22 && PathString.StartsWith(TEXT("/Script/Engine.Blueprint")) && PathString.EndsWith(TEXT("_C'")) == false)
+	{
+		return TSoftClassPtr<UWidget>(StringCastTSoftWidgetClassPtr(PathString.Mid(0, PathString.Len() - 1) + TEXT("_C'")));
+	}
+	return TSoftClassPtr<UWidget>(PathString);
+}
+
+TSoftClassPtr<UUserWidget> UUniversalWidgetFunctionLibrary::StringCastTSoftUserWidgetClassPtr(const FString& PathString)
+{
+	if (PathString.Len() > 22 && PathString.StartsWith(TEXT("/Script/Engine.Blueprint")) && PathString.EndsWith(TEXT("_C'")) == false)
+	{
+		return TSoftClassPtr<UUserWidget>(StringCastTSoftUserWidgetClassPtr(PathString.Mid(0, PathString.Len() - 1) + TEXT("_C'")));
+	}
+	return TSoftClassPtr<UUserWidget>(PathString);
+}
+

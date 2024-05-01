@@ -80,10 +80,10 @@ public:
 
 	/** * 附加可解析字符串组 */
 	UFUNCTION(BlueprintPure, Category = "Aimo|Static|StringParse")
-	static int SetStringsDataString(TArray<FString>& Strings, const FString& DataNameString, const FString& DataString, const FString& Cmd = "Set");
+	static int SetStringsDataString(TArray<FString>& Strings, const FString& DataNameString, const FString& DataString, const FString& Cmd = TEXT("Set"));
 
 	/** * 返回时间字符串,分隔符号( , ),可选结尾分号 */
-	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|String")
+	UFUNCTION(BlueprintPure, Category = "Aimo|Static|String")
 	static FString GetNowTimerToString();
 
 	/** * 返回时间为唯一UID,可选复杂随机结尾,可选结尾分号 */
@@ -173,7 +173,9 @@ public:
 
 
 	/** * 获取字符串组有效值 */
-	static FString StringsGet(TArray<FString>& Strings, int Index = 0);
+	static FString StringsGet(const TArray<FString>& Strings, int Index = 0);
+
+	static FName NamesGet(const TArray<FName>& Names, int Index);
 
 	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
 	static TArray<FString> GetStringsScopes(const TArray<FString>& Strings, int Index = 0, int EndIndex = -1);
@@ -190,7 +192,7 @@ public:
 
 	/** * 设置NameStringsArray Cmd: Set,SetAll,Add,AddU,Remove,RemoveAll */
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
-	static int SetNameStringsArray(TArray<FNameStrings>& NameStringsArray, const FString& Name, const FString& String, const FString& Cmd = "Set");
+	static int SetNameStringsArray(TArray<FNameStrings>& NameStringsArray, const FString& Name, const FString& InString, const FString& Cmd = "Set");
 
 	/** * 获取附近落地位置 */
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
@@ -215,6 +217,7 @@ public:
 	static AActor* SpawnActor(UObject* World, UClass* Class, const FVector& Location, const FQuat& Rotation = FQuat({ 0.0f, 0.0f, 0.0f }), const FVector& Scale3D = FVector(1.0f, 1.0f, 1.0f), AActor* Owner = nullptr, APawn* Instigator = nullptr);
 	static AActor* SpawnActor(UObject* World, UClass* Class, const FTransform& Transform, AActor* Owner = nullptr, APawn* Instigator = nullptr);
 	static AActor* SpawnActor(UObject* World, UClass* Class, const FVector& Location, const FRotator& Rotation = FRotator(0.0f, 0.0f, 0.0f), const FVector& Scale3D = FVector(1.0f, 1.0f, 1.0f), AActor* Owner = nullptr, APawn* Instigator = nullptr);
+	static AActor* SpawnActor(UObject* World, TSoftClassPtr<AActor> SoftActorClass, const FVector& Location, const FRotator& Rotation, const FVector& Scale3D, AActor* Owner, APawn* Instigator);
 
 
 	/** * 生成贴花并映射位置 */

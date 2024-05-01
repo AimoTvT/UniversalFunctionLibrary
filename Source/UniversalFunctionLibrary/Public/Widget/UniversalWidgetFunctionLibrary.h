@@ -35,7 +35,7 @@ public:
 
 	/** * 设置Image资源 */
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Wdiget")
-	static void SetWidgetSize(UWidget* Widget, const FVector2D& Size, USizeBox* SizeBox = nullptr);
+	static void SetWidgetSize(UWidget* Widget, const FVector2D& InSize, USizeBox* SizeBox = nullptr);
 
 	/** * 设置Image资源 */
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Wdiget")
@@ -48,4 +48,13 @@ public:
 	/** * 获取视口位置 */
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Wdiget")
 	static FVector2D GetViewportSize(UObject* WorldContextObject);
+
+	/** * 字符串转换 SoftWidgetObjectPtr */
+	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Cast")
+	static TSoftClassPtr<UWidget> StringCastTSoftWidgetClassPtr(const FString& PathString);
+
+	/** * 字符串转换 SoftUserWidgetObjectPtr */
+	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Cast")
+	static TSoftClassPtr<UUserWidget> StringCastTSoftUserWidgetClassPtr(const FString& PathString);
+
 };
