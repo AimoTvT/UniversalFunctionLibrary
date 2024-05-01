@@ -24,9 +24,9 @@ UUniversalFunctionLibrarys::UUniversalFunctionLibrarys()
 
 TSoftClassPtr<UObject> UUniversalFunctionLibrarys::StringCastTSoftClassPtr(const FString& PathString)
 {
-	if (PathString.Len() > 22 && PathString.StartsWith("/Script/Engine.Blueprint") && PathString.EndsWith("_C'") == false)
+	if (PathString.Len() > 22 && PathString.StartsWith(TEXT("/Script/Engine.Blueprint")) && PathString.EndsWith(TEXT("_C'")) == false)
 	{
-		return TSoftClassPtr<UObject>(StringCastTSoftClassPtr(PathString.Mid(0, PathString.Len() - 1) + "_C'"));
+		return TSoftClassPtr<UObject>(StringCastTSoftClassPtr(PathString.Mid(0, PathString.Len() - 1) + TEXT("_C'")));
 	}
 	return TSoftClassPtr<UObject>(PathString);
 }
@@ -108,7 +108,7 @@ TArray<FString> UUniversalFunctionLibrarys::StringParseIntoArray(const FString& 
 			}
 			return Strings;
 		}*/
-		if (SourceString.Mid(i, 1) == "," || SourceString.Mid(i, 1) == ";")
+		if (SourceString.Mid(i, 1) == TEXT(",") || SourceString.Mid(i, 1) == TEXT(";"))
 		{
 			TIndex = Strings.Add(SourceString.Mid(Index, i - Index));
 			if (MaxIndex == -1 || MaxIndex > TIndex)
@@ -118,9 +118,9 @@ TArray<FString> UUniversalFunctionLibrarys::StringParseIntoArray(const FString& 
 			}
 			return Strings;
 		}
-		if (SourceString.Mid(i, 1) == "\"")
+		if (SourceString.Mid(i, 1) == TEXT("\""))
 		{
-			TIndex = FindStringParseIndex(SourceString, "\"", "", i + 1); //SourceString.Find("\"", ESearchCase::IgnoreCase, ESearchDir::FromStart, i + 1);
+			TIndex = FindStringParseIndex(SourceString, TEXT("\""), TEXT(""), i + 1); //SourceString.Find("\"", ESearchCase::IgnoreCase, ESearchDir::FromStart, i + 1);
 			if (TIndex != -1)
 			{
 				i = size_t(TIndex + 1);
@@ -135,9 +135,9 @@ TArray<FString> UUniversalFunctionLibrarys::StringParseIntoArray(const FString& 
 			Strings.Add(SourceString.Mid(Index, SourceString.Len() - Index));
 			return Strings;
 		}
-		if (SourceString.Mid(i, 1) == "{")
+		if (SourceString.Mid(i, 1) == TEXT("{"))
 		{
-			TIndex = FindStringParseIndex(SourceString, "}", "{", i + 1);
+			TIndex = FindStringParseIndex(SourceString, TEXT("}"), TEXT("{"), i + 1);
 			if (TIndex != -1)
 			{
 				i = size_t(TIndex + 1);
@@ -178,7 +178,7 @@ TArray<FString> UUniversalFunctionLibrarys::StringParseIntoArrayLong(const FStri
 	}
 	for (size_t i = 0; i < SourceString.Len(); i++)
 	{
-		if (SourceString.Mid(i, 1) == ";")
+		if (SourceString.Mid(i, 1) == TEXT(";"))
 		{
 			TIndex = Strings.Add(SourceString.Mid(Index, i - Index + 1));
 			if (MaxIndex == -1 || MaxIndex > TIndex)
@@ -188,18 +188,18 @@ TArray<FString> UUniversalFunctionLibrarys::StringParseIntoArrayLong(const FStri
 			}
 			return Strings;
 		}
-		if (SourceString.Mid(i, 1) == "\"")
+		if (SourceString.Mid(i, 1) == TEXT("\""))
 		{
-			TIndex = FindStringParseIndex(SourceString, "\"", "", i + 1);
+			TIndex = FindStringParseIndex(SourceString, TEXT("\""), TEXT(""), i + 1);
 			if (MaxIndex == -1 || TIndex != -1)
 			{
 				i = TIndex;
 				continue;
 			}
 		}
-		if (SourceString.Mid(i, 1) == "{")
+		if (SourceString.Mid(i, 1) == TEXT("{"))
 		{
-			TIndex = FindStringParseIndex(SourceString, "}", "{", i + 1);
+			TIndex = FindStringParseIndex(SourceString, TEXT("}"), TEXT("{"), i + 1);
 			if (MaxIndex == -1 || TIndex != -1)
 			{
 				i = TIndex;
@@ -209,7 +209,7 @@ TArray<FString> UUniversalFunctionLibrarys::StringParseIntoArrayLong(const FStri
 	}
 	if (SourceString.Len() != Index)
 	{
-		Strings.Add(SourceString.Mid(Index, SourceString.Len() - Index) + ";");
+		Strings.Add(SourceString.Mid(Index, SourceString.Len() - Index) + TEXT(";"));
 	}
 	return Strings;
 }
@@ -223,7 +223,7 @@ int UUniversalFunctionLibrarys::FindBeginString(const TArray<FString>& Strings, 
 			if (SourceString == Strings[i].Mid(0, SourceString.Len()))
 			{
 				FString String = Strings[i].Mid(SourceString.Len(), 1);
-				if (String == "," || String == ";" || String == " " || String == "")
+				if (String == TEXT(",") || String == TEXT(";") || String == TEXT(" ") || String.IsEmpty())
 				{
 					return i;
 				}
@@ -243,7 +243,7 @@ TArray<int> UUniversalFunctionLibrarys::FindBeginStrings(const TArray<FString>& 
 			if (SourceString == Strings[i].Mid(0, SourceString.Len()))
 			{
 				FString String = Strings[i].Mid(SourceString.Len(), 1);
-				if (String == "," || String == ";" || String == " " || String == "")
+				if (String == TEXT(",") || String == TEXT(";") || String == TEXT(" ") || String.IsEmpty())
 				{
 					Indexs.Add(i);
 				}
@@ -255,18 +255,18 @@ TArray<int> UUniversalFunctionLibrarys::FindBeginStrings(const TArray<FString>& 
 
 FString UUniversalFunctionLibrarys::AppendParseString(const FString& NameString, const FString& DataString)
 {
-	return NameString + "," + DataString;
+	return FString::Printf(TEXT("%s,%s"), *NameString, *DataString);
 }
 
 FString UUniversalFunctionLibrarys::AppendParseStrings(const FString& NameString, const FString& DataNameString, const FString& DataString, bool ChildAppendParse)
 {
 	if (ChildAppendParse)
 	{
-		return NameString + ",{" + AppendParseString(DataNameString, DataString) + "}";
+		return  FString::Printf(TEXT("%s,{%s}"), *NameString, *AppendParseString(DataNameString, DataString));
 	}
 	else
 	{
-		return NameString + ",{" + DataNameString + DataString + "}";
+		return FString::Printf(TEXT("%s,{%s,%s}"), *NameString, *DataNameString, *DataString);
 	}
 }
 
@@ -275,34 +275,34 @@ int UUniversalFunctionLibrarys::SetStringsDataString(TArray<FString>& Strings, c
 	int Index = FindBeginString(Strings, DataNameString);
 	if (Index != -1)
 	{
-		if (Cmd == "Set")
+		if (Cmd == TEXT("Set"))
 		{
 			Strings[Index] = AppendParseString(DataNameString, DataString);
 		}
-		if (Cmd == "SetAll")
+		if (Cmd == TEXT("SetAll"))
 		{
 			Strings[Index] = AppendParseString(DataNameString, DataString);
 		}
-		if (Cmd == "Add")
+		if (Cmd == TEXT("Add"))
 		{
 			Strings[Index] = AppendParseString(Strings[Index], DataString);
 		}
-		if (Cmd == "AddU")
+		if (Cmd == TEXT("AddU"))
 		{
 			Strings[Index] = AppendParseString(Strings[Index], DataString);
 		}
-		if (Cmd == "Remove")
+		if (Cmd == TEXT("Remove"))
 		{
 			Strings.RemoveAt(Index);
 		}
-		if (Cmd == "RemoveAll")
+		if (Cmd == TEXT("RemoveAll"))
 		{
 			Strings.RemoveAt(Index);
 		}
 	}
 	else
 	{
-		if (Cmd == "Set" || Cmd == "SetAll" || Cmd == "Add" || Cmd == "AddU")
+		if (Cmd == TEXT("Set") || Cmd == TEXT("SetAll") || Cmd == TEXT("Add") || Cmd == TEXT("AddU"))
 		{
 			Index = Strings.Add(AppendParseString(DataNameString, DataString));
 		}
@@ -312,36 +312,19 @@ int UUniversalFunctionLibrarys::SetStringsDataString(TArray<FString>& Strings, c
 
 FString UUniversalFunctionLibrarys::GetNowTimerToString()
 {
-	FString Time = "";
-	Time += FString::FromInt(UKismetMathLibrary::Now().GetYear());
-	Time += "~";
-	Time += FString::FromInt(UKismetMathLibrary::Now().GetMonth());
-	Time += "~";
-	Time += FString::FromInt(UKismetMathLibrary::Now().GetDay());
-	Time += "~";
-	Time += FString::FromInt(UKismetMathLibrary::Now().GetHour());
-	Time += "~";
-	Time += FString::FromInt(UKismetMathLibrary::Now().GetMinute());
-	Time += "~";
-	Time += FString::FromInt(UKismetMathLibrary::Now().GetSecond());
-	Time += "~";
-	Time += FString::FromInt(UKismetMathLibrary::Now().GetMillisecond());
-	return Time;
+	return FString::Printf(TEXT("%d~%d~%d~%d~%d~%d~%d")
+		, UKismetMathLibrary::Now().GetYear(), UKismetMathLibrary::Now().GetMonth()
+		, UKismetMathLibrary::Now().GetDay(), UKismetMathLibrary::Now().GetHour()
+		, UKismetMathLibrary::Now().GetMinute(), UKismetMathLibrary::Now().GetSecond()
+		, UKismetMathLibrary::Now().GetMillisecond());
 }
 
 FString UUniversalFunctionLibrarys::NewUIDToString(bool Complex, bool EndSemicolon)
 {
-	FString UID = "";
-
-	UID += UUniversalFunctionLibrarys::GetNowTimerToString();
-	UID += "~";
-	UID += FString::FromInt(UKismetMathLibrary::RandomIntegerInRange(0, 222));
-	if (Complex)
+	FString UID = FString::Printf(TEXT("%s~%d"), *UUniversalFunctionLibrarys::GetNowTimerToString(), UKismetMathLibrary::RandomIntegerInRange(Complex ? 222 : 0, Complex ? 2222 : 222));
+	if (EndSemicolon)
 	{
-		UID += FString::FromInt(UKismetMathLibrary::RandomIntegerInRange(222, 2222));
-	}if (EndSemicolon)
-	{
-		UID += ";";
+		UID += TEXT(";");
 	}
 	return UID;
 }
@@ -512,14 +495,14 @@ FVector2D UUniversalFunctionLibrarys::StringToVector2D(const FString& SourceStri
 		Vector2D.Y = FCString::Atof(*Strings[1]);
 		return Vector2D;
 	}
-	SourceString.ParseIntoArray(Strings, *FString(" "), true);
+	SourceString.ParseIntoArray(Strings, *FString(TEXT(" ")), true);
 	if (Strings.Num() > 1)
 	{
 		Vector2D.X = FCString::Atof(*Strings[0].Mid(2, Strings[0].Len() - 2));
 		Vector2D.Y = FCString::Atof(*Strings[1].Mid(2, Strings[1].Len() - 2));
 		return Vector2D;
 	}
-	SourceString.ParseIntoArray(Strings, *FString("~"), true);
+	SourceString.ParseIntoArray(Strings, *FString(TEXT("~")), true);
 	if (Strings.Num() > 1)
 	{
 		Vector2D.X = FCString::Atof(*Strings[0].Mid(2, Strings[0].Len() - 2));
@@ -652,9 +635,14 @@ bool UUniversalFunctionLibrarys::GetActorIsLocalPlayerController(AActor* Actor)
 }
 
 
-FString UUniversalFunctionLibrarys::StringsGet(TArray<FString>& Strings, int Index)
+FString UUniversalFunctionLibrarys::StringsGet(const TArray<FString>& Strings, int Index)
 {
 	return Strings.IsValidIndex(Index) ? Strings[Index] : FString();
+}
+
+FName UUniversalFunctionLibrarys::NamesGet(const TArray<FName>& Names, int Index)
+{
+	return Names.IsValidIndex(Index) ? Names[Index] : NAME_None;
 }
 
 TArray<FString> UUniversalFunctionLibrarys::GetStringsScopes(const TArray<FString>& Strings, int Index, int EndIndex)
@@ -699,50 +687,53 @@ int UUniversalFunctionLibrarys::GetNameStringsIndex(TArray<FNameStrings>& NameSt
 	return -1;
 }
 
-int UUniversalFunctionLibrarys::SetNameStringsArray(TArray<FNameStrings>& NameStringsArray, const FString& Name, const FString& String, const FString& Cmd)
+int UUniversalFunctionLibrarys::SetNameStringsArray(TArray<FNameStrings>& NameStringsArray, const FString& Name, const FString& InString, const FString& Cmd)
 {
-	if (Name.Len() > 0)
+	if (Name.IsEmpty())
 	{
 		return -1;
 	}
 	int Index = GetNameStringsIndex(NameStringsArray, Name);
 	if (Index != -1)
 	{
-		if (Cmd == "Set")
+		if (Cmd == TEXT("Set"))
 		{
-			if (NameStringsArray[Index].Strings.Num())
+			if (InString.Len())
 			{
-				NameStringsArray[Index].Strings[0] = String;
+				if (NameStringsArray[Index].Strings.Num())
+				{
+					NameStringsArray[Index].Strings[0] = InString;
+					return Index;
+				}
+				NameStringsArray[Index].Strings.Add(InString);
 				return Index;
 			}
-			if (Cmd == "Add")
-			{
-				NameStringsArray[Index].Strings.Add(String);
-				return Index;
-			}
+			NameStringsArray.RemoveAt(Index);
+			return -1;
 		}
-		if (Cmd == "SetAll")
+		if (Cmd == TEXT("Add"))
 		{
-			if (String.Len())
-			{
-				String.ParseIntoArray(NameStringsArray[Index].Strings, *FString(";"));
-				return Index;
-				
-			}
-			if (Cmd == "RemoveAll")
-			{
-				NameStringsArray.RemoveAt(Index);
-				return -1;
-			}
-		}
-		if (Cmd == "AddU")
-		{
-			NameStringsArray[Index].Strings.AddUnique(String);
+			NameStringsArray[Index].Strings.Add(InString);
 			return Index;
 		}
-		if (Cmd == "Remove")
+		if (Cmd == TEXT("SetAll"))
 		{
-			NameStringsArray[Index].Strings.Remove(String);
+			if (InString.Len())
+			{
+				InString.ParseIntoArray(NameStringsArray[Index].Strings, *FString(TEXT(";")));
+				return Index;
+			}
+			NameStringsArray.RemoveAt(Index);
+			return -1;
+		}
+		if (Cmd == TEXT("AddU"))
+		{
+			NameStringsArray[Index].Strings.AddUnique(InString);
+			return Index;
+		}
+		if (Cmd == TEXT("Remove"))
+		{
+			NameStringsArray[Index].Strings.Remove(InString);
 			if (NameStringsArray[Index].Strings.Num())
 			{
 				return Index;
@@ -750,18 +741,18 @@ int UUniversalFunctionLibrarys::SetNameStringsArray(TArray<FNameStrings>& NameSt
 			NameStringsArray.RemoveAt(Index);
 			return -1;
 		}
-		if (Cmd == "RemoveAll")
+		if (Cmd == TEXT("RemoveAll"))
 		{
 			NameStringsArray.RemoveAt(Index);
 			return -1;
 		}
 	}
-	if (Cmd == "Add")
+	if (Cmd == TEXT("Add"))
 	{
 		FNameStrings NameStrings;
 		NameStrings.Name = Name;
-		NameStrings.Strings.Add(String);
-		NameStringsArray.Add(NameStrings);
+		NameStrings.Strings.Add(InString);
+		return NameStringsArray.Add(NameStrings);
 	}	
 	return -1;
 }
@@ -828,7 +819,7 @@ FVector2D UUniversalFunctionLibrarys::GetXYClampSize(float X, float Y, float XMa
 /** * 字符串异步加载 */
 //void UUniversalFunctionLibrarys::StringAssetLoad(const FString& String, FStreamableDelegate StreamableDelegate)
 //{
-	//if(String != ""  && UAssetManager::Get().IsValid())
+	//if(String.IsEmpty() == false  && UAssetManager::Get().IsValid())
 	//{
 	//	UAssetManager::Get().GetStreamableManager().RequestAsyncLoad(StringLoadObjectAsset(String), StreamableDelegate);
 	//}
@@ -885,6 +876,19 @@ AActor* UUniversalFunctionLibrarys::SpawnActor(UObject* World, UClass* Class, FT
 AActor* UUniversalFunctionLibrarys::SpawnActor(UObject* World, UClass* Class, const FVector& Location, const FRotator& Rotation, const FVector& Scale3D, AActor* Owner, APawn* Instigator)
 {
 	return SpawnActor(World, Class, Location, FQuat(Rotation), Scale3D, Owner, Instigator);
+}
+
+AActor* UUniversalFunctionLibrarys::SpawnActor(UObject* World, TSoftClassPtr<AActor> SoftActorClass, const FVector& Location, const FRotator& Rotation, const FVector& Scale3D, AActor* Owner, APawn* Instigator)
+{
+	if (SoftActorClass.IsNull())
+	{
+		return nullptr;
+	}
+	if (SoftActorClass.IsValid() == false)
+	{
+		SoftActorClass.LoadSynchronous();
+	}
+	return SpawnActor(World, SoftActorClass.Get(), Location, FQuat(Rotation), Scale3D, Owner, Instigator);
 }
 
 
