@@ -1,13 +1,30 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+/**
+* Copyright: Aimo_皑墨
+* Open source protocol: MIT License
+;* Open Source Date: Jun 5, 2023
+* BiLiBiLi (哔哩哔哩) address: https://space.bilibili.com/146962867
+* making address: https://github.com/AimoTvT/UniversalFunctionLibrary
+* We welcome the contributions of powerful movers and movers to join this plugin
+* Build powerful plugins together!!
+*
+* 版权所有权: Aimo_皑墨
+* 开源协议: MIT License
+* 开源时间: 2023年6月29日
+* BiLiBiLi(哔哩哔哩)地址: https://space.bilibili.com/146962867
+* GitHub地址: https://github.com/AimoTvT/UniversalFunctionLibrary
+* 欢迎有实力的大佬/萌新加入本插件的贡献
+* 一起打造强大的插件!!!
+*/
 
 
 #include "Widget/UniversalWidgetFunctionLibrary.h"
 #include "Components/PanelWidget.h"
 #include "Components/CanvasPanelSlot.h"
-#include "UMG/Public/Components/Image.h"
-#include "UMG/Public/Components/SizeBox.h"
-#include "UMG/public/Blueprint/WidgetLayoutLibrary.h"
-#include "Engine/Classes/Materials/MaterialInstanceDynamic.h"
+#include "Components/Image.h"
+#include "Components/SizeBox.h"
+#include "Engine/Texture2D.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 UUniversalWidgetFunctionLibrary::UUniversalWidgetFunctionLibrary()
 {
@@ -28,7 +45,7 @@ FVector2D UUniversalWidgetFunctionLibrary::GetAllParentLocation(UWidget* Widget)
 	while (Widget)
 	{
 		Vector2D += Widget->GetPaintSpaceGeometry().GetLocalPositionAtCoordinates({ 0.0,0.0 });
-		Widget = Widget->GetParent();
+		Widget = Widget->GetParent(); //这个报错可能是编辑器判断bug,不影响编译和使用
 	}
 	return Vector2D;
 }

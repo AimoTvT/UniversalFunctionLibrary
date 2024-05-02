@@ -1,20 +1,34 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+/**
+* Copyright: Aimo_皑墨
+* Open source protocol: MIT License
+;* Open Source Date: Jun 5, 2023
+* BiLiBiLi (哔哩哔哩) address: https://space.bilibili.com/146962867
+* making address: https://github.com/AimoTvT/UniversalFunctionLibrary
+* We welcome the contributions of powerful movers and movers to join this plugin
+* Build powerful plugins together!!
+*
+* 版权所有权: Aimo_皑墨
+* 开源协议: MIT License
+* 开源时间: 2023年6月29日
+* BiLiBiLi(哔哩哔哩)地址: https://space.bilibili.com/146962867
+* GitHub地址: https://github.com/AimoTvT/UniversalFunctionLibrary
+* 欢迎有实力的大佬/萌新加入本插件的贡献
+* 一起打造强大的插件!!!
+*/
+
 
 
 #include "UniversalFunctionLibrarys.h"
+#include "Engine/World.h"
+#include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h" //游戏静态库
 #include "Kismet/KismetMathLibrary.h" //官方函数库
+#include "Components/ActorComponent.h"
 #include "Kismet/KismetSystemLibrary.h" //官方函数库
 #include "Runtime/Engine/Public/DelayAction.h" //延迟的函数库
 #include "UniversalFunctionLibrary/Public/Config/UniversalStruct.h"
-
-//#include "Engine/Classes/Particles/ParticleSystem.h"  //粒子头文件
-#include "Engine/Classes/Components/DecalComponent.h" //贴花
-
-
-
-
-
+#include "Components/DecalComponent.h"
+#include "Materials/MaterialInterface.h"
 
 
 UUniversalFunctionLibrarys::UUniversalFunctionLibrarys()
@@ -893,13 +907,15 @@ AActor* UUniversalFunctionLibrarys::SpawnActor(UObject* World, TSoftClassPtr<AAc
 
 
 
-UDecalComponent* UUniversalFunctionLibrarys::SpawnDecalAtLocation(AActor* Owner, UMaterialInstance* MaterialInstance, FVector Location, FRotator Rotation, FVector Scale3D, float LifeSpan, float FadeScreeSize)
+
+
+UDecalComponent* UUniversalFunctionLibrarys::SpawnDecalAtLocation(AActor* Owner, UMaterialInterface* MaterialInterface, FVector Location, FRotator Rotation, FVector Scale3D, float LifeSpan, float FadeScreeSize)
 {
 	if (Owner)
 	{
-		if (MaterialInstance)
+		if (MaterialInterface)
 		{
-			UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(Owner->GetWorld(), MaterialInstance, Scale3D, Location, Rotation, LifeSpan); //生成贴花
+			UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(Owner->GetWorld(), MaterialInterface, Scale3D, Location, Rotation, LifeSpan); //生成贴花
 			if (DecalComponent)
 			{
 				DecalComponent->SetFadeScreenSize(FadeScreeSize); //设置贴花范围显示位置
@@ -911,13 +927,13 @@ UDecalComponent* UUniversalFunctionLibrarys::SpawnDecalAtLocation(AActor* Owner,
 }
 
 
-UDecalComponent* UUniversalFunctionLibrarys::SpawnDecalAtLocation(AActor* Owner, UMaterialInstance* MaterialInstance, FVector Location, FVector Rotation, FVector Scale3D, float LifeSpan, float FadeScreeSize)
+UDecalComponent* UUniversalFunctionLibrarys::SpawnDecalAtLocation(AActor* Owner, UMaterialInterface* MaterialInterface, FVector Location, FVector Rotation, FVector Scale3D, float LifeSpan, float FadeScreeSize)
 {
 	if (Owner)
 	{
-		if (MaterialInstance)
+		if (MaterialInterface)
 		{
-			UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(Owner->GetWorld(), MaterialInstance, Scale3D, Location, Rotation.ToOrientationRotator(), LifeSpan); //生成贴花
+			UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(Owner->GetWorld(), MaterialInterface, Scale3D, Location, Rotation.ToOrientationRotator(), LifeSpan); //生成贴花
 			if (DecalComponent)
 			{
 				DecalComponent->SetFadeScreenSize(FadeScreeSize); //设置贴花范围显示位置
@@ -928,13 +944,13 @@ UDecalComponent* UUniversalFunctionLibrarys::SpawnDecalAtLocation(AActor* Owner,
 	return nullptr;
 }
 
-UDecalComponent* UUniversalFunctionLibrarys::SpawnDecalAttached(AActor* Owner, UMaterialInstance* MaterialInstance, USceneComponent* AttachComponent, FName AttachPointName, FVector Location, FRotator Rotation, FVector Scale3D, EAttachLocation::Type LocationType, float LifeSpan, float FadeScreeSize)
+UDecalComponent* UUniversalFunctionLibrarys::SpawnDecalAttached(AActor* Owner, UMaterialInterface* MaterialInterface, USceneComponent* AttachComponent, FName AttachPointName, FVector Location, FRotator Rotation, FVector Scale3D, EAttachLocation::Type LocationType, float LifeSpan, float FadeScreeSize)
 {
 	if (Owner)
 	{
-		if (MaterialInstance)
+		if (MaterialInterface)
 		{
-			UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAttached(MaterialInstance, Scale3D, AttachComponent, AttachPointName, AttachComponent->GetSocketTransform(AttachPointName).InverseTransformPosition(Location), UKismetMathLibrary::InverseTransformRotation(AttachComponent->GetSocketTransform(AttachPointName), Rotation), LocationType, LifeSpan); //生成贴花并计算好对应的相对位置,旋转
+			UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAttached(MaterialInterface, Scale3D, AttachComponent, AttachPointName, AttachComponent->GetSocketTransform(AttachPointName).InverseTransformPosition(Location), UKismetMathLibrary::InverseTransformRotation(AttachComponent->GetSocketTransform(AttachPointName), Rotation), LocationType, LifeSpan); //生成贴花并计算好对应的相对位置,旋转
 			if (DecalComponent)
 			{
 				DecalComponent->SetFadeScreenSize(FadeScreeSize);//设置贴花范围显示位置
@@ -945,13 +961,13 @@ UDecalComponent* UUniversalFunctionLibrarys::SpawnDecalAttached(AActor* Owner, U
 	return nullptr;
 }
 
-UDecalComponent* UUniversalFunctionLibrarys::SpawnDecalAttached(AActor* Owner, UMaterialInstance* MaterialInstance, USceneComponent* AttachComponent, FName AttachPointName, FVector Location, FVector Rotation, FVector Scale3D, EAttachLocation::Type LocationType, float LifeSpan, float FadeScreeSize)
+UDecalComponent* UUniversalFunctionLibrarys::SpawnDecalAttached(AActor* Owner, UMaterialInterface* MaterialInterface, USceneComponent* AttachComponent, FName AttachPointName, FVector Location, FVector Rotation, FVector Scale3D, EAttachLocation::Type LocationType, float LifeSpan, float FadeScreeSize)
 {
 	if (Owner)
 	{
-		if (MaterialInstance)
+		if (MaterialInterface)
 		{
-			UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAttached(MaterialInstance, Scale3D, AttachComponent, AttachPointName, AttachComponent->GetSocketTransform(AttachPointName).InverseTransformPosition(Location), UKismetMathLibrary::InverseTransformRotation(AttachComponent->GetSocketTransform(AttachPointName), Rotation.ToOrientationRotator()), LocationType, LifeSpan); //生成贴花并计算好对应的相对位置,旋转
+			UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAttached(MaterialInterface, Scale3D, AttachComponent, AttachPointName, AttachComponent->GetSocketTransform(AttachPointName).InverseTransformPosition(Location), UKismetMathLibrary::InverseTransformRotation(AttachComponent->GetSocketTransform(AttachPointName), Rotation.ToOrientationRotator()), LocationType, LifeSpan); //生成贴花并计算好对应的相对位置,旋转
 			if (DecalComponent)
 			{
 				DecalComponent->SetFadeScreenSize(FadeScreeSize); //设置贴花范围显示位置
