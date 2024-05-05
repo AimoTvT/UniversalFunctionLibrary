@@ -96,8 +96,9 @@ static FString GetNowTimerToString();
 
 /** * 返回时间为唯一UID,可选复杂随机结尾,可选结尾分号 */
 UFUNCTION(BlueprintCallable, Category = "Aimo|Static|String")
-static FString NewUIDToString(bool Complex = false, bool EndSemicolon = false);
+static FString NewUIDToString(bool bComplex = false, bool bEndSemicolon = false);
 
+/** * 玩家摄像机射线检测 */
 UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Player")
 static bool PlayerCameraRay(AActor* Owner, FHitResult& OutHit, TArray<AActor*> ActorsToIgnore, ETraceTypeQuery TraceTypeQuery, float Distance = 500);
 
@@ -212,11 +213,6 @@ static FVector FrontScopeRay(UObject* World, const FVector& Location, const FVec
 /** * 获取XY限制大小 */
 UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
 static FVector2D GetXYClampSize(float X, float Y, float XMax, float YMax);
-
-//#include "Runtime/Engine/Classes/Engine/AssetManager.h"  //异步加载资源的头文件 
-//UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
-/** * 字符串异步加载 */
-//static void StringAssetLoad(const FString& String, FStreamableDelegate StreamableDelegate);
 
 /** * 屏幕打印字符串 */
 static void PrintString(const UObject* Object, const FString& String, float Tim = 2.0f, const FName Key = NAME_None);
