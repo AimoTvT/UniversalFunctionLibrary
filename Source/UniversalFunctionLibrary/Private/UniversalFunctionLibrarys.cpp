@@ -1,14 +1,12 @@
 /**
 * Copyright: Aimo_皑墨
-* Open source protocol: MIT License
-;* Open Source Date: Jun 5, 2023
+* Open Source Date: Jun 5, 2023
 * BiLiBiLi (哔哩哔哩) address: https://space.bilibili.com/146962867
 * making address: https://github.com/AimoTvT/UniversalFunctionLibrary
 * We welcome the contributions of powerful movers and movers to join this plugin
 * Build powerful plugins together!!
 *
 * 版权所有权: Aimo_皑墨
-* 开源协议: MIT License
 * 开源时间: 2023年6月29日
 * BiLiBiLi(哔哩哔哩)地址: https://space.bilibili.com/146962867
 * GitHub地址: https://github.com/AimoTvT/UniversalFunctionLibrary
@@ -333,10 +331,10 @@ FString UUniversalFunctionLibrarys::GetNowTimerToString()
 		, UKismetMathLibrary::Now().GetMillisecond());
 }
 
-FString UUniversalFunctionLibrarys::NewUIDToString(bool Complex, bool EndSemicolon)
+FString UUniversalFunctionLibrarys::NewUIDToString(bool bComplex, bool bEndSemicolon)
 {
-	FString UID = FString::Printf(TEXT("%s~%d"), *UUniversalFunctionLibrarys::GetNowTimerToString(), UKismetMathLibrary::RandomIntegerInRange(Complex ? 222 : 0, Complex ? 2222 : 222));
-	if (EndSemicolon)
+	FString UID = FString::Printf(TEXT("%s~%d"), *UUniversalFunctionLibrarys::GetNowTimerToString(), UKismetMathLibrary::RandomIntegerInRange(bComplex ? 222 : 0, bComplex ? 2222 : 222));
+	if (bEndSemicolon)
 	{
 		UID += TEXT(";");
 	}
@@ -434,27 +432,6 @@ float UUniversalFunctionLibrarys::GetSlowNumerical(float Numerical, float EndNum
 	return Numerical + SlowNumerical;
 }
 
-void UUniversalFunctionLibrarys::SetInputModeAndMouse(UObject* Object, bool Control)
-{
-	if (Object && Object->GetWorld() && Object->GetWorld()->GetFirstPlayerController())
-	{
-		Object->GetWorld()->GetFirstPlayerController()->bShowMouseCursor = Control;
-		if (Control)
-		{
-
-			FInputModeGameAndUI InputMode;
-			InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-			InputMode.SetHideCursorDuringCapture(true);
-
-			Object->GetWorld()->GetFirstPlayerController()->SetInputMode(InputMode);
-		}
-		else
-		{
-			FInputModeGameOnly InputMode;
-			Object->GetWorld()->GetFirstPlayerController()->SetInputMode(InputMode);
-		}
-	}
-}
 
 void UUniversalFunctionLibrarys::DestroyComponentAllChild(const USceneComponent* SceneComponent)
 {
@@ -648,17 +625,6 @@ bool UUniversalFunctionLibrarys::GetActorIsLocalPlayerController(AActor* Actor)
 	return false;
 }
 
-
-FString UUniversalFunctionLibrarys::StringsGet(const TArray<FString>& Strings, int Index)
-{
-	return Strings.IsValidIndex(Index) ? Strings[Index] : FString();
-}
-
-FName UUniversalFunctionLibrarys::NamesGet(const TArray<FName>& Names, int Index)
-{
-	return Names.IsValidIndex(Index) ? Names[Index] : NAME_None;
-}
-
 TArray<FString> UUniversalFunctionLibrarys::GetStringsScopes(const TArray<FString>& Strings, int Index, int EndIndex)
 {
 	TArray<FString> TStrings;
@@ -740,7 +706,7 @@ int UUniversalFunctionLibrarys::SetNameStringsArray(TArray<FNameStrings>& NameSt
 			NameStringsArray.RemoveAt(Index);
 			return -1;
 		}
-		if (Cmd == TEXT("AddU"))
+		if (Cmd == TEXT("AddUnique"))
 		{
 			NameStringsArray[Index].Strings.AddUnique(InString);
 			return Index;
@@ -771,7 +737,7 @@ int UUniversalFunctionLibrarys::SetNameStringsArray(TArray<FNameStrings>& NameSt
 	return -1;
 }
 
-FVector UUniversalFunctionLibrarys::FrontScopeRay(UObject* World, const FVector& Location, const FVector& Forward, const TEnumAsByte<ETraceTypeQuery>& TraceTypeQuerys, const TArray<AActor*>& ActorsToIgnore, float Distance, float DownDistance, float Scope, int Num)
+FVector UUniversalFunctionLibrarys::FrontScopeRay(UObject* World, const FVector& Location, const FVector& Forward, const TEnumAsByte<ETraceTypeQuery>& TraceTypeQuerys, const TArray<AActor*>& ActorsToIgnore, float Distance, float DropDistance, float Scope, int Num)
 {
 	FHitResult OutHit;
 	if (World)
@@ -791,7 +757,7 @@ FVector UUniversalFunctionLibrarys::FrontScopeRay(UObject* World, const FVector&
 			if (UKismetSystemLibrary::LineTraceSingle(World, PlayWorldLocation, DownWorldLocation, TraceTypeQuerys, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, OutHit, true) == false)
 			{
 				EndWorldLocation = DownWorldLocation;
-				EndWorldLocation.Z = PlayWorldLocation.Z - DownDistance;
+				EndWorldLocation.Z = PlayWorldLocation.Z - DropDistance;
 				if (UKismetSystemLibrary::LineTraceSingle(World, DownWorldLocation, EndWorldLocation, TraceTypeQuerys, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, OutHit, true))
 				{
 					return OutHit.ImpactPoint;
@@ -799,7 +765,7 @@ FVector UUniversalFunctionLibrarys::FrontScopeRay(UObject* World, const FVector&
 			}
 		}
 	}
-	if (UKismetSystemLibrary::LineTraceSingle(World, Location, { Location.X ,Location.Y, Location.Z - DownDistance * 10 }, TraceTypeQuerys, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, OutHit, true))
+	if (UKismetSystemLibrary::LineTraceSingle(World, Location, { Location.X ,Location.Y, Location.Z - DropDistance * 10 }, TraceTypeQuerys, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, OutHit, true))
 	{
 		return OutHit.ImpactPoint;
 	}
@@ -830,15 +796,19 @@ FVector2D UUniversalFunctionLibrarys::GetXYClampSize(float X, float Y, float XMa
 	return FVector2D(XMax, XMax / (X / Y));
 }
 
-/** * 字符串异步加载 */
-//void UUniversalFunctionLibrarys::StringAssetLoad(const FString& String, FStreamableDelegate StreamableDelegate)
-//{
-	//if(String.IsEmpty() == false  && UAssetManager::Get().IsValid())
-	//{
-	//	UAssetManager::Get().GetStreamableManager().RequestAsyncLoad(StringLoadObjectAsset(String), StreamableDelegate);
-	//}
-//}
 
+
+
+
+FString UUniversalFunctionLibrarys::StringsGet(const TArray<FString>& Strings, int Index)
+{
+	return Strings.IsValidIndex(Index) ? Strings[Index] : FString();
+}
+
+FName UUniversalFunctionLibrarys::NamesGet(const TArray<FName>& Names, int Index)
+{
+	return Names.IsValidIndex(Index) ? Names[Index] : NAME_None;
+}
 
 /** * 屏幕打印字符串 */
 void UUniversalFunctionLibrarys::PrintString(const UObject* Object, const FString& String, float Tim, const FName Key)
@@ -977,3 +947,12 @@ UDecalComponent* UUniversalFunctionLibrarys::SpawnDecalAttached(AActor* Owner, U
 	}
 	return nullptr;
 }
+
+/** * 字符串异步加载 */
+//void UUniversalFunctionLibrarys::StringAssetLoad(const FString& String, FStreamableDelegate StreamableDelegate)
+//{
+	//if(String.IsEmpty() == false  && UAssetManager::Get().IsValid())
+	//{
+	//	UAssetManager::Get().GetStreamableManager().RequestAsyncLoad(StringLoadObjectAsset(String), StreamableDelegate);
+	//}
+//}
