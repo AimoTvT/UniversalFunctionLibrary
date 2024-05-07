@@ -56,7 +56,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Wdiget")
 	static void SetWidgetPosition(UWidget* Widget, const FVector2D& Position);
 
-	/** * 设置Image资源 
+	/** * 设置Image大小 
 	* Widget 目标控件
 	* InSize 目标大小
 	* SizeBox 是否尺寸框包裹

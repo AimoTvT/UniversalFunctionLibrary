@@ -369,6 +369,13 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
 	static FVector2D GetXYClampSize(float X, float Y, float XMax, float YMax);
 
+	/** * 设置控制
+	* World 目标世界
+	* bControl 是否控制
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
+	static void SetInputModeAndMouse(UObject* World, bool bControl);
+
 
 	/** * 获取字符串组有效值
 	* C++ 使用的,本插件自己使用的并不开放蓝图,不建议调用,所以并不再多解释
