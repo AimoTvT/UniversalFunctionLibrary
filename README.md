@@ -1,8 +1,39 @@
 # UniversalFunctionLibrary
-> - 名字: 万能函数库
-> - 描述: 各种函数,精简,实用,目前尚未完善
 
-## Engine version (>= 5.3.0)
+> - Name: UniversalFunctionLibrary
+> - description: UniversalFunctionLibrarys.h  header file contains
+>> - Paths convert various soft references
+>> - Path to load the class or resource
+>> - Create a time UID string
+>> - Quick function for player ray
+>> - A function that limits the value and returns the remainder
+>> - Get the controller quickly
+>> - String group handler functions, such as converting TArray<FName>
+> - description: UniversalWidgetFunctionLibrary.h  header file contains
+>> - Get control location, support nesting
+>> - Set the Image resource function quickly
+>> - Quick access to mouse/viewport functions
+> - Note: Some C++ functions, which are not open blueprints used by this plug-in, are not recommended to be called
+
+# 万能函数库
+
+> - 名字: 万能函数库
+> - 描述: UniversalFunctionLibrarys.h 头文件 包含
+>> - 路径转化各种软引用
+>> - 路径加载类或资源
+>> - 创建时间UID字符串
+>> - 玩家射线的快捷函数
+>> - 限制值并返回多余数的函数
+>> - 快捷的获取控制器
+>> - 字符串组的处理函数,如转化TArray<FName>
+> - 描述: UniversalWidgetFunctionLibrary.h 头文件 包含
+>> - 获取控件位置,支持嵌套
+>> - 快捷设置Image资源函数
+>> - 快捷获取鼠标/视口函数
+> - 注释: 部分C++函数,本插件自己使用的并不开放蓝图,不建议调用
+
+
+## Engine version (>= 5.4.0)
 
 > - Copyright: Aimo\_皑墨
 > - Open source protocol: MIT License
@@ -15,7 +46,7 @@
 > - Build powerful plugins together!!
 
 
-## 引擎版本( >= 5.3.0 )
+## 引擎版本( >= 5.4.0 )
 
 > - 版权所有权: Aimo\_皑墨
 > - 开源协议: MIT License
@@ -888,7 +919,7 @@ static FVector2D GetAllParentLocation(UWidget* Widget);
 UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Wdiget")
 static void SetWidgetPosition(UWidget* Widget, const FVector2D& Position);
 
-/** * 设置Image资源 
+/** * 设置Image大小 
 * Widget 目标控件
 * InSize 目标大小
 * SizeBox 是否尺寸框包裹
