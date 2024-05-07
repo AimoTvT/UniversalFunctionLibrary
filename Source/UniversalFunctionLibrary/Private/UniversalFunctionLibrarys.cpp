@@ -797,7 +797,27 @@ FVector2D UUniversalFunctionLibrarys::GetXYClampSize(float X, float Y, float XMa
 }
 
 
+void UUniversalFunctionLibrarys::SetInputModeAndMouse(UObject* World, bool bControl)
+{
+	if (World && World->GetWorld() && World->GetWorld()->GetFirstPlayerController())
+	{
+		World->GetWorld()->GetFirstPlayerController()->bShowMouseCursor = bControl;
+		if (bControl)
+		{
 
+			FInputModeGameAndUI InputMode;
+			InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+			InputMode.SetHideCursorDuringCapture(true);
+
+			World->GetWorld()->GetFirstPlayerController()->SetInputMode(InputMode);
+		}
+		else
+		{
+			FInputModeGameOnly InputMode;
+			World->GetWorld()->GetFirstPlayerController()->SetInputMode(InputMode);
+		}
+	}
+}
 
 
 FString UUniversalFunctionLibrarys::StringsGet(const TArray<FString>& Strings, int Index)
