@@ -29,9 +29,36 @@
 #include "Materials/MaterialInterface.h"
 
 
+
 UUniversalFunctionLibrarys::UUniversalFunctionLibrarys()
 {
+	
+}
 
+
+const TCHAR* UUniversalFunctionLibrarys::ESetCmdToString(ESetCmd InSetCmd)
+{
+	switch (InSetCmd)
+	{
+	case ESetCmd::Set:
+		return TEXT("Set");
+	case ESetCmd::SetAll:
+		return TEXT("SetAll");
+	case ESetCmd::Add:
+		return TEXT("Add");
+	case ESetCmd::AddUnique:
+		return TEXT("AddUnique");
+	case ESetCmd::Remove:
+		return TEXT("Remove");
+	case ESetCmd::RemoveAll:
+		return TEXT("RemoveAll");
+	case ESetCmd::Swap:
+		return TEXT("Swap");
+	case ESetCmd::SwapOther:
+		return TEXT("SwapOther");
+	}
+	ensure(false);
+	return TEXT("Unknown");
 }
 
 TSoftClassPtr<UObject> UUniversalFunctionLibrarys::StringCastTSoftClassPtr(const FString& PathString)
@@ -358,26 +385,6 @@ bool UUniversalFunctionLibrarys::PlayerCameraRay(AActor* Owner, FHitResult& OutH
 }
 
 
-template< class T >
-T UUniversalFunctionLibrarys::ClampLimitScopes(T Index, T Min, T Max, T& Indexes)
-{
-	if (Index < Min)
-	{
-		Indexes = Index - Min;
-		return Min;
-	}
-	if (Index > Max)
-	{
-		Indexes = Index - Max;
-		return Max;
-	}
-	/*if (Index + Min > Max)
-	{
-		Indexes = Index + Min - Max;
-	}*/
-	Indexes = 0;
-	return Index;
-}
 
 int UUniversalFunctionLibrarys::ClampLimitIntScopes(int Index, int Min, int Max, int& Indexes)
 {
@@ -388,14 +395,6 @@ float UUniversalFunctionLibrarys::ClampLimitFloatScopes(float Index, float Min, 
 {
 	return ClampLimitScopes(Index, Min, Max, Indexes);
 }
-
-
-template<class T>
-bool UUniversalFunctionLibrarys::IsClampLimitScopes(T Index, T Min, T Max)
-{
-	return Index >= Min && Index <= Max;
-}
-
 
 
 bool UUniversalFunctionLibrarys::IsClampLimitIntScopes(int Index, int Min, int Max)
@@ -655,86 +654,19 @@ TArray<FString> UUniversalFunctionLibrarys::NamesToStrings(const TArray<FName>& 
 	return Strings;
 }
 
-int UUniversalFunctionLibrarys::GetNameStringsIndex(TArray<FNameStrings>& NameStringsArray, const FString& Name)
+int UUniversalFunctionLibrarys::GetNameStringsIndex(const TArray<FNameStrings>& NameStringsArray, const FString& Name)
 {
-	for (size_t i = 0; i < NameStringsArray.Num(); i++)
-	{
-		if (NameStringsArray[i].Name == Name)
-		{
-			return i;
-		}
-	}
-	return -1;
+	return FNameStrings::GetArrayNameIndex(NameStringsArray, Name);
 }
 
-int UUniversalFunctionLibrarys::SetNameStringsArray(TArray<FNameStrings>& NameStringsArray, const FString& Name, const FString& InString, const FString& Cmd)
+FString UUniversalFunctionLibrarys::GetNameStringsIndexData(const TArray<FNameStrings>& NameStringsArray, const FString& Name)
 {
-	if (Name.IsEmpty())
-	{
-		return -1;
-	}
-	int Index = GetNameStringsIndex(NameStringsArray, Name);
-	if (Index != -1)
-	{
-		if (Cmd == TEXT("Set"))
-		{
-			if (InString.Len())
-			{
-				if (NameStringsArray[Index].Strings.Num())
-				{
-					NameStringsArray[Index].Strings[0] = InString;
-					return Index;
-				}
-				NameStringsArray[Index].Strings.Add(InString);
-				return Index;
-			}
-			NameStringsArray.RemoveAt(Index);
-			return -1;
-		}
-		if (Cmd == TEXT("Add"))
-		{
-			NameStringsArray[Index].Strings.Add(InString);
-			return Index;
-		}
-		if (Cmd == TEXT("SetAll"))
-		{
-			if (InString.Len())
-			{
-				InString.ParseIntoArray(NameStringsArray[Index].Strings, *FString(TEXT(";")));
-				return Index;
-			}
-			NameStringsArray.RemoveAt(Index);
-			return -1;
-		}
-		if (Cmd == TEXT("AddUnique"))
-		{
-			NameStringsArray[Index].Strings.AddUnique(InString);
-			return Index;
-		}
-		if (Cmd == TEXT("Remove"))
-		{
-			NameStringsArray[Index].Strings.Remove(InString);
-			if (NameStringsArray[Index].Strings.Num())
-			{
-				return Index;
-			}
-			NameStringsArray.RemoveAt(Index);
-			return -1;
-		}
-		if (Cmd == TEXT("RemoveAll"))
-		{
-			NameStringsArray.RemoveAt(Index);
-			return -1;
-		}
-	}
-	if (Cmd == TEXT("Add"))
-	{
-		FNameStrings NameStrings;
-		NameStrings.Name = Name;
-		NameStrings.Strings.Add(InString);
-		return NameStringsArray.Add(NameStrings);
-	}	
-	return -1;
+	return FNameStrings::GetArrayNameIndexData(NameStringsArray, Name);
+}
+
+int UUniversalFunctionLibrarys::SetNameStringsArray(TArray<FNameStrings>& NameStringsArray, const FString& Name, const FString& InString, ESetCmd SetCmd)
+{
+	return FNameStrings::SetArrayNameData(NameStringsArray, Name, InString, SetCmd);
 }
 
 FVector UUniversalFunctionLibrarys::FrontScopeRay(UObject* World, const FVector& Location, const FVector& Forward, const TEnumAsByte<ETraceTypeQuery>& TraceTypeQuerys, const TArray<AActor*>& ActorsToIgnore, float Distance, float DropDistance, float Scope, int Num)
@@ -819,6 +751,46 @@ void UUniversalFunctionLibrarys::SetInputModeAndMouse(UObject* World, bool bCont
 	}
 }
 
+int UUniversalFunctionLibrarys::GetStringColorsNameIndex(const TArray<FStringColor>& InStringColorArray, const FName& InName)
+{
+	return FStringColor::GetArrayNameIndex(InStringColorArray, InName);
+}
+
+FStringColor UUniversalFunctionLibrarys::GetStringColorsNameIndexData(const TArray<FStringColor>& InStringColorArray, const FName& InName)
+{
+	return FStringColor::GetArrayNameIndexData(InStringColorArray, InName);
+}
+
+int UUniversalFunctionLibrarys::SetStringColorsNameData(UPARAM(ref) TArray<FStringColor>& InStringColorArray, const FStringColor& InStringColor)
+{
+	return FStringColor::SetArrayNameData(InStringColorArray, InStringColor);
+}
+
+int UUniversalFunctionLibrarys::GetStringImageDatasNameIndex(const TArray<FStringImageData>& InStringImageDataArray, const FName& InName)
+{
+	return FStringImageData::GetArrayNameIndex(InStringImageDataArray, InName);
+}
+
+FStringImageData UUniversalFunctionLibrarys::GetStringImageDatasNameIndexData(const TArray<FStringImageData>& InStringImageDataArray, const FName& InName)
+{
+	return FStringImageData::GetArrayNameIndexData(InStringImageDataArray, InName);
+}
+
+
+int UUniversalFunctionLibrarys::SetStringImageDatasNameData(UPARAM(ref)TArray<FStringImageData>& InStringImageDataArray, const FStringImageData& InStringImageData)
+{
+	return FStringImageData::SetArrayNameData(InStringImageDataArray, InStringImageData);
+}
+
+bool UUniversalFunctionLibrarys::RemoveStringImageDatasName(UPARAM(ref) TArray<FStringImageData>& InStringImageDataArray, const FName& InName)
+{
+	return  FStringImageData::RemoveArrayNameData(InStringImageDataArray, InName);
+}
+
+float UUniversalFunctionLibrarys::RandomBiasedValueFloat(float Min, float Max, float BiasFactor)
+{
+	return RandomBiasedValue(Min, Max, BiasFactor);
+}
 
 FString UUniversalFunctionLibrarys::StringsGet(const TArray<FString>& Strings, int Index)
 {
@@ -850,7 +822,7 @@ void UUniversalFunctionLibrarys::CustomDelay(UObject* WorldContextObject, float 
 		Latentinfo.CallbackTarget = WorldContextObject;
 		Latentinfo.ExecutionFunction = *ExecutionFunction;
 		Latentinfo.Linkage = 0;
-		Latentinfo.UUID = UKismetMathLibrary::RandomIntegerInRange(0, 222);
+		Latentinfo.UUID = FMath::RandRange(0, 222);
 		LatentActionManager.AddNewAction(WorldContextObject, Latentinfo.UUID, new FDelayAction(Duration, Latentinfo));
 
 	}
