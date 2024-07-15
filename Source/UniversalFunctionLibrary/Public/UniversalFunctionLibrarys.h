@@ -20,6 +20,8 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Engine/Engine.h"
 #include "Engine/EngineTypes.h"
+#include "Config/UniversalStruct.h"
+
 
 #include "UniversalFunctionLibrarys.generated.h"
 
@@ -37,8 +39,13 @@ class UNIVERSALFUNCTIONLIBRARY_API UUniversalFunctionLibrarys : public UBlueprin
 public:
 	UUniversalFunctionLibrarys();
 
+	/** * ESetCmdToString
+	* InSetCmd 枚举
+	* return 名字字符串
+	*/
+	static const TCHAR* ESetCmdToString(ESetCmd InSetCmd);
 
-	/** * 字符串转换 SoftObjectPtr 
+	/** * 字符串转换SoftClassPtr 
 	* PathString 类路径
 	* return 软引用类
 	*/
@@ -163,8 +170,26 @@ public:
 	* Indexes 多余的数
 	* return 返回限制值
 	*/
-	template< class T >
-	static T ClampLimitScopes(T Index, T Min, T Max, T& Indexes);
+	template<typename T >
+	static T ClampLimitScopes(T Index, T Min, T Max, T& Indexes)
+	{
+		if (Index < Min)
+		{
+			Indexes = Index - Min;
+			return Min;
+		}
+		if (Index > Max)
+		{
+			Indexes = Index - Max;
+			return Max;
+		}
+		/*if (Index + Min > Max)
+		{
+			Indexes = Index + Min - Max;
+		}*/
+		Indexes = 0;
+		return Index;
+	}
 
 	/** * Int数值范围内并返回引用多余的数 
 	* Index 目标值
@@ -186,6 +211,31 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
 	static float ClampLimitFloatScopes(float Index, float Min, float Max, float& Indexes);
 
+	/** * 数值范围内并返回引用有效数
+	* Index 目标值
+	* Min 最小值
+	* Max 最大值
+	* Indexes 有效数,默认填入添加的数值
+	* return 返回限制值
+	*/
+	template<typename T >
+	static T AddClampLimitScopes(T Index, T Min, T Max, T& AddIndexes)
+	{
+		T TIndex = Index + AddIndexes;
+		if (TIndex < Min)
+		{
+			AddIndexes = Min - Index;
+			return Min;
+		}
+		if (TIndex > Max)
+		{
+			AddIndexes = Max - Index;
+			return Max;
+		}
+		return TIndex;
+	}
+
+
 	/** * 判断是否是范围内的值 
 	* Index 目标值
 	* Min 最小值
@@ -193,7 +243,10 @@ public:
 	* return 返回是否在限制内
 	*/
 	template< class T >
-	static bool IsClampLimitScopes(T Index, T Min, T Max);
+	static bool IsClampLimitScopes(T Index, T Min, T Max)
+	{
+		return Index >= Min && Index <= Max;
+	}
 
 	/** * Int判断是否是范围内的值 
 	* Index 目标值
@@ -328,13 +381,21 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
 	static TArray<FString> NamesToStrings(const TArray<FName>& Strings);
 
-	/** * 获取该Actor玩家控制器是否本地 
+	/** * 获取名字字符串组对应名字索引
 	* 名字字符串组结构 获取索引数据
 	* Name 对应名字字符串组的名字 (NameStrings.Name)
 	* return 返回获取索引
 	*/
 	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
-	static int GetNameStringsIndex(TArray<FNameStrings>& NameStringsArray, const FString& Name);
+	static int GetNameStringsIndex(const TArray<FNameStrings>& NameStringsArray, const FString& Name);
+
+	/** * 获取名字字符串组对应名字索引数据
+	* 名字字符串组结构 获取索引数据
+	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* return 返回获取索引字符串值
+	*/
+	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
+	static FString GetNameStringsIndexData(const TArray<FNameStrings>& NameStringsArray, const FString& Name);
 
 	/** * 设置NameStringsArray Cmd: Set,SetAll,Add,AddU,Remove,RemoveAll 
 	* 名字字符串组结构 用来修改解析的
@@ -344,7 +405,7 @@ public:
 	* return 返回获取索引
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
-	static int SetNameStringsArray(TArray<FNameStrings>& NameStringsArray, const FString& Name, const FString& InString, const FString& Cmd = "Set");
+	static int SetNameStringsArray(TArray<FNameStrings>& NameStringsArray, const FString& Name, const FString& InString, ESetCmd SetCmd = ESetCmd::Set);
 
 	/** * 获取附近落地位置,射线获取玩家附加可以落点的位置
 	* Location 初始射线位置
@@ -376,6 +437,78 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
 	static void SetInputModeAndMouse(UObject* World, bool bControl);
 
+	/** * 获取名字字符串组对应名字索引
+	* 名字字符串组结构 获取索引数据
+	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* return 返回获取索引
+	*/
+	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
+	static int GetStringColorsNameIndex(const TArray<FStringColor>& InStringColorArray, const FName& InName);
+
+	/** * 获取名字字符串组对应名字索引数据
+	* 名字字符串组结构 获取索引数据
+	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* return 返回获取索引字符串值
+	*/
+	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
+	static FStringColor GetStringColorsNameIndexData(const TArray<FStringColor>& InStringColorArray, const FName& InName);
+
+	/** * 设置NameStringsArray Cmd: Set,SetAll,Add,AddU,Remove,RemoveAll
+	* 名字字符串组结构 用来修改解析的
+	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* return 返回获取索引  C++ 结构体里如何添加该结构体Array时的函数
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
+	static int SetStringColorsNameData(UPARAM(ref) TArray<FStringColor>& InStringColorArray, const FStringColor& InStringColor);
+
+
+	/** * 获取名字字符串组对应名字索引
+	* 名字字符串组结构 获取索引数据
+	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* return 返回获取索引
+	*/
+	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
+	static int GetStringImageDatasNameIndex(const TArray<FStringImageData>& InStringImageDataArray, const FName& InName);
+
+	/** * 获取名字字符串组对应名字索引数据
+	* 名字字符串组结构 获取索引数据
+	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* return 返回获取索引字符串值
+	*/
+	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
+	static FStringImageData GetStringImageDatasNameIndexData(const TArray<FStringImageData>& InStringImageDataArray, const FName& InName);
+
+	/** * 设置NameStringsArray Cmd: Set,SetAll,Add,AddU,Remove,RemoveAll
+	* 名字字符串组结构 用来修改解析的
+	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* return 返回获取索引  C++ 结构体里如何添加该结构体Array时的函数
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
+	static int SetStringImageDatasNameData(UPARAM(ref) TArray<FStringImageData>& InStringImageDataArray, const FStringImageData& InStringImageData);
+
+	/** * 获取名字字符串组对应名字索引
+	* 名字字符串组结构 获取索引数据
+	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* return 返回获取索引
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
+	static bool RemoveStringImageDatasName(UPARAM(ref) TArray<FStringImageData>& InStringImageDataArray, const FName& InName);
+
+	/** * 函数来生成一个带有偏置的随机数值
+	* Min 最小值
+	* Max 最大值	
+	* BiasFactor 0到1概率偏差值
+	* return 返回是否在限制内
+	*/
+	template< class T >
+	static T RandomBiasedValue(T Min, T Max, float BiasFactor)
+	{
+		BiasFactor = FMath::Pow(FMath::RandRange(0.0f, 1.0f), BiasFactor);
+		return Min + (Max - Min) * BiasFactor;
+	}
+
+	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
+	static float RandomBiasedValueFloat(float Min, float Max, float BiasFactor);
 
 	/** * 获取字符串组有效值
 	* C++ 使用的,本插件自己使用的并不开放蓝图,不建议调用,所以并不再多解释
@@ -429,4 +562,32 @@ public:
 	//UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
 	//static void StringAssetLoad(const FString& String, FStreamableDelegate StreamableDelegate);
 
+	template<typename T>
+	static int SetNameArray(TArray<FName>& InNames, TArray<T>& InArray, const FName& InName, const T& Data, bool Remove = false)
+	{
+		if (InName.IsNone())
+		{
+			return -1;
+		}
+		int Index = InNames.Find(InName);
+		if (Remove)  /** 判断是否删除 */
+		{
+			InNames.RemoveAt(Index);
+			InArray.RemoveAt(Index);
+			return -1;
+		}
+		if (Index == -1)
+		{
+			Index = InNames.Add(InName);
+		}
+		if (!InArray.IsValidIndex(Index))
+		{
+			InArray.SetNum(Index + 1);
+		}
+		InArray[Index] = Data;
+		return Index;
+	}
+
+
+	
 };
