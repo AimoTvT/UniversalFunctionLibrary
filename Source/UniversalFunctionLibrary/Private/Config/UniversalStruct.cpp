@@ -16,7 +16,100 @@
 
 #include "Config/UniversalStruct.h"
 
-int FNameStrings::GetArrayNameIndex(const TArray<FNameStrings>& NameStringsArray, const FString& InName)
+int FStringStrings::GetArrayNameIndex(const TArray<FStringStrings>& StringStringsArray, const FString& InName)
+{
+	for (size_t i = 0; i < StringStringsArray.Num(); i++)
+	{
+		if (StringStringsArray[i].Name == InName)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+FString FStringStrings::GetArrayNameIndexData(const TArray<FStringStrings>& StringStringsArray, const FString& InName)
+{
+	for (size_t i = 0; i < StringStringsArray.Num(); i++)
+	{
+		if (StringStringsArray[i].Name == InName && StringStringsArray[i].Strings.IsValidIndex(0))
+		{
+			return StringStringsArray[i].Strings[0];
+		}
+	}
+	return FString(); //UE 有没有FString的默认值
+}
+
+int FStringStrings::SetArrayNameData(TArray<FStringStrings>& StringStringsArray, const FString& InName, const FString& InString, ESetCmd SetCmd)
+{
+	if (InName.IsEmpty())
+	{
+		return -1;
+	}
+	int Index = GetArrayNameIndex(StringStringsArray, InName);
+	if (Index != -1)
+	{
+		switch (SetCmd)
+		{
+		case ESetCmd::Set:
+			if (InString.Len())
+			{
+				if (StringStringsArray[Index].Strings.Num())
+				{
+					StringStringsArray[Index].Strings[0] = InString;
+					return Index;
+				}
+				StringStringsArray[Index].Strings.Add(InString);
+				return Index;
+			}
+			StringStringsArray.RemoveAt(Index);
+			return -1;
+			break;
+		case ESetCmd::Add:
+			StringStringsArray[Index].Strings.Add(InString);
+			return Index;
+			break;
+		case ESetCmd::SetAll:
+			if (InString.Len())
+			{
+				InString.ParseIntoArray(StringStringsArray[Index].Strings, *FString(TEXT(";")));
+				return Index;
+			}
+			StringStringsArray.RemoveAt(Index);
+			return -1;
+			break;
+		case ESetCmd::AddUnique:
+			StringStringsArray[Index].Strings.AddUnique(InString);
+			return Index;
+			break;
+		case ESetCmd::Remove:
+			StringStringsArray[Index].Strings.Remove(InString);
+			if (StringStringsArray[Index].Strings.Num())
+			{
+				return Index;
+			}
+			StringStringsArray.RemoveAt(Index);
+			return -1;
+			break;
+		case ESetCmd::RemoveAll:
+
+			StringStringsArray.RemoveAt(Index);
+			return -1;
+			break;
+		}
+	}
+	if (SetCmd != ESetCmd::Remove && SetCmd != ESetCmd::RemoveAll)
+	{
+		FStringStrings StringStrings;
+		StringStrings.Name = InName;
+		StringStrings.Strings.Add(InString);
+		return StringStringsArray.Add(StringStrings);
+	}
+	return -1;
+}
+
+
+int FNameStrings::GetArrayNameIndex(const TArray<FNameStrings>& NameStringsArray, const FName& InName)
 {
 	for (size_t i = 0; i < NameStringsArray.Num(); i++)
 	{
@@ -28,7 +121,7 @@ int FNameStrings::GetArrayNameIndex(const TArray<FNameStrings>& NameStringsArray
 	return -1;
 }
 
-FString FNameStrings::GetArrayNameIndexData(const TArray<FNameStrings>& NameStringsArray, const FString& InName)
+FString FNameStrings::GetArrayNameIndexData(const TArray<FNameStrings>& NameStringsArray, const FName& InName)
 {
 	for (size_t i = 0; i < NameStringsArray.Num(); i++)
 	{
@@ -40,9 +133,9 @@ FString FNameStrings::GetArrayNameIndexData(const TArray<FNameStrings>& NameStri
 	return FString(); //UE 有没有FString的默认值
 }
 
-int FNameStrings::SetArrayNameData(TArray<FNameStrings>& NameStringsArray, const FString& InName, const FString& InString, ESetCmd SetCmd)
+int FNameStrings::SetArrayNameData(TArray<FNameStrings>& NameStringsArray, const FName& InName, const FString& InString, ESetCmd SetCmd)
 {
-	if (InName.IsEmpty())
+	if (InName.IsNone())
 	{
 		return -1;
 	}
@@ -107,8 +200,6 @@ int FNameStrings::SetArrayNameData(TArray<FNameStrings>& NameStringsArray, const
 	}
 	return -1;
 }
-
-
 
 
 

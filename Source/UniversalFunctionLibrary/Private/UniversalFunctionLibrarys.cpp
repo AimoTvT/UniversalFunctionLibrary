@@ -27,6 +27,7 @@
 #include "UniversalFunctionLibrary/Public/Config/UniversalStruct.h"
 #include "Components/DecalComponent.h"
 #include "Materials/MaterialInterface.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 
 
 
@@ -91,6 +92,22 @@ UObject* UUniversalFunctionLibrarys::StringLoadObjectAsset(const FString& PathSt
 	TSoftObjectPtr<UObject> SoftObjectPtr = StringCastTSoftObjectPtr(PathString);
 	return SoftObjectPtr.IsNull() && SoftObjectPtr.IsValid() ? SoftObjectPtr.Get() : SoftObjectPtr.LoadSynchronous();
 }
+
+UClass* UUniversalFunctionLibrarys::AssetDataLoadClass(const FAssetData& AssetData)
+{
+	if (AssetData.IsValid())
+	{
+		if (AssetData.AssetClassPath.ToString() == TEXT("/Script/Engine.Blueprint"))
+		{
+		}
+		else
+		{
+
+		}
+	}
+	return nullptr;
+}
+
 
 int UUniversalFunctionLibrarys::FindStringParseIndex(const FString& SourceString, const FString& FindString, const FString& SensitiveString, int Index)
 {
@@ -654,19 +671,19 @@ TArray<FString> UUniversalFunctionLibrarys::NamesToStrings(const TArray<FName>& 
 	return Strings;
 }
 
-int UUniversalFunctionLibrarys::GetNameStringsIndex(const TArray<FNameStrings>& NameStringsArray, const FString& Name)
+int UUniversalFunctionLibrarys::GetStringStringsIndex(const TArray<FStringStrings>& StringStringsArray, const FString& Name)
 {
-	return FNameStrings::GetArrayNameIndex(NameStringsArray, Name);
+	return FStringStrings::GetArrayNameIndex(StringStringsArray, Name);
 }
 
-FString UUniversalFunctionLibrarys::GetNameStringsIndexData(const TArray<FNameStrings>& NameStringsArray, const FString& Name)
+FString UUniversalFunctionLibrarys::GetStringStringsIndexData(const TArray<FStringStrings>& StringStringsArray, const FString& Name)
 {
-	return FNameStrings::GetArrayNameIndexData(NameStringsArray, Name);
+	return FStringStrings::GetArrayNameIndexData(StringStringsArray, Name);
 }
 
-int UUniversalFunctionLibrarys::SetNameStringsArray(TArray<FNameStrings>& NameStringsArray, const FString& Name, const FString& InString, ESetCmd SetCmd)
+int UUniversalFunctionLibrarys::SetStringStringsArray(TArray<FStringStrings>& StringStringsArray, const FString& Name, const FString& InString, ESetCmd SetCmd)
 {
-	return FNameStrings::SetArrayNameData(NameStringsArray, Name, InString, SetCmd);
+	return FStringStrings::SetArrayNameData(StringStringsArray, Name, InString, SetCmd);
 }
 
 FVector UUniversalFunctionLibrarys::FrontScopeRay(UObject* World, const FVector& Location, const FVector& Forward, const TEnumAsByte<ETraceTypeQuery>& TraceTypeQuerys, const TArray<AActor*>& ActorsToIgnore, float Distance, float DropDistance, float Scope, int Num)
@@ -787,9 +804,9 @@ bool UUniversalFunctionLibrarys::RemoveStringImageDatasName(UPARAM(ref) TArray<F
 	return  FStringImageData::RemoveArrayNameData(InStringImageDataArray, InName);
 }
 
-float UUniversalFunctionLibrarys::RandomBiasedValueFloat(float Min, float Max, float BiasFactor)
+float UUniversalFunctionLibrarys::GenerateWeightedRandomFloat(float MinValue, float MaxValue, float BiasFactor)
 {
-	return RandomBiasedValue(Min, Max, BiasFactor);
+	return GenerateWeightedRandom(MinValue, MaxValue, BiasFactor);
 }
 
 FString UUniversalFunctionLibrarys::StringsGet(const TArray<FString>& Strings, int Index)
@@ -940,6 +957,26 @@ UDecalComponent* UUniversalFunctionLibrarys::SpawnDecalAttached(AActor* Owner, U
 	return nullptr;
 }
 
+bool UUniversalFunctionLibrarys::CompositeDataTableAddDataTable(UCompositeDataTable* InCompositeDataTable, UDataTable* TableToAdd)
+{
+	if (InCompositeDataTable && TableToAdd)
+	{
+		InCompositeDataTable->AddParentTable(TableToAdd);
+		return true;
+	}
+	return false;
+}
+
+bool UUniversalFunctionLibrarys::CompositeDataTableRemoveDataTable(UCompositeDataTable* InCompositeDataTable, UDataTable* TableToRemove)
+{
+	if (InCompositeDataTable && TableToRemove)
+	{
+		InCompositeDataTable->RemoveParentTable(TableToRemove);
+		return true;
+	}
+	return false;
+}
+
 /** * 字符串异步加载 */
 //void UUniversalFunctionLibrarys::StringAssetLoad(const FString& String, FStreamableDelegate StreamableDelegate)
 //{
@@ -948,3 +985,25 @@ UDecalComponent* UUniversalFunctionLibrarys::SpawnDecalAttached(AActor* Owner, U
 	//	UAssetManager::Get().GetStreamableManager().RequestAsyncLoad(StringLoadObjectAsset(String), StreamableDelegate);
 	//}
 //}
+
+
+
+TArray<FAssetData> UUniversalFunctionLibrarys::FindPathAssets(const FName& PathName, bool bRecursive)
+{
+	// 确保AssetRegistryModule已加载
+	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+	IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+	TArray<FAssetData> AssetDatas;
+	AssetRegistry.GetAssetsByPath(PathName, AssetDatas, bRecursive);
+	return AssetDatas;
+}
+
+TArray<FName> UUniversalFunctionLibrarys::FindSubPaths(const FName& PathName, bool bRecursive)
+{
+	// 确保AssetRegistryModule已加载
+	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+	IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+	TArray<FName> PathNames;
+	AssetRegistry.GetSubPaths(PathName, PathNames, bRecursive);
+	return PathNames;
+}

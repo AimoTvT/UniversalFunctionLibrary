@@ -73,7 +73,60 @@ enum class EArithmeticOperator :uint8
 };
 
 
-/** * 名字字符串组 */
+/** * 字符串字符串组,用于名字变化多的值 */
+USTRUCT(BlueprintType)
+struct FStringStrings : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	/** * 名字 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Name")
+	FString Name;
+
+	/** * 字符串组 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Strings")
+	TArray<FString> Strings;
+
+	bool Serialize(FArchive& Ar)
+	{
+		Ar << *this;
+		return true;
+	}
+
+	friend FArchive& operator<<(FArchive& Ar, FStringStrings& StringStrings)
+	{
+		// 序列化每个成员变量
+		Ar << StringStrings.Name;
+		Ar << StringStrings.Strings;
+		return Ar;
+	}
+
+	/** * 获取名字字符串组对应名字索引
+	* 名字字符串组结构 获取索引数据
+	* Name 对应名字字符串组的名字 (StringStrings.Name)
+	* return 返回获取索引
+	*/
+	static int GetArrayNameIndex(const TArray<FStringStrings>& StringStringsArray, const FString& InName);
+
+	/** * 获取名字字符串组对应名字索引数据
+	* 名字字符串组结构 获取索引数据
+	* Name 对应名字字符串组的名字 (StringStrings.Name)
+	* return 返回获取索引字符串值
+	*/
+	static FString GetArrayNameIndexData(const TArray<FStringStrings>& StringStringsArray, const FString& InName);
+
+	/** * 设置StringStringsArray Cmd: Set,SetAll,Add,AddU,Remove,RemoveAll
+	* 名字字符串组结构 用来修改解析的
+	* Name 对应名字字符串组的名字 (StringStrings.Name)
+	* InString 是输入的值
+	* Cmd 是操作指令,Set,SetAll,Add,AddUnique,Remove,RemoveAll
+	* return 返回获取索引  C++ 结构体里如何添加该结构体Array时的函数
+	*/
+	static int SetArrayNameData(TArray<FStringStrings>& StringStringsArray, const FString& InName, const FString& InString, ESetCmd SetCmd = ESetCmd::Set);
+
+};
+
+/** * 名字字符串组,用于名字变化不多的值 */
 USTRUCT(BlueprintType)
 struct FNameStrings : public FTableRowBase
 {
@@ -81,7 +134,7 @@ struct FNameStrings : public FTableRowBase
 
 	/** * 名字 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Name")
-	FString Name;
+	FName Name;
 
 	/** * 字符串组 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Strings")
@@ -94,14 +147,14 @@ struct FNameStrings : public FTableRowBase
 	* Name 对应名字字符串组的名字 (NameStrings.Name)
 	* return 返回获取索引
 	*/
-	static int GetArrayNameIndex(const TArray<FNameStrings>& NameStringsArray, const FString& InName);
+	static int GetArrayNameIndex(const TArray<FNameStrings>& NameStringsArray, const FName& InName);
 
 	/** * 获取名字字符串组对应名字索引数据
 	* 名字字符串组结构 获取索引数据
 	* Name 对应名字字符串组的名字 (NameStrings.Name)
 	* return 返回获取索引字符串值
 	*/
-	static FString GetArrayNameIndexData(const TArray<FNameStrings>& NameStringsArray, const FString& InName);
+	static FString GetArrayNameIndexData(const TArray<FNameStrings>& NameStringsArray, const FName& InName);
 
 	/** * 设置NameStringsArray Cmd: Set,SetAll,Add,AddU,Remove,RemoveAll
 	* 名字字符串组结构 用来修改解析的
@@ -110,10 +163,9 @@ struct FNameStrings : public FTableRowBase
 	* Cmd 是操作指令,Set,SetAll,Add,AddUnique,Remove,RemoveAll
 	* return 返回获取索引  C++ 结构体里如何添加该结构体Array时的函数
 	*/
-	static int SetArrayNameData(TArray<FNameStrings>& NameStringsArray, const FString& InName, const FString& InString, ESetCmd SetCmd = ESetCmd::Set);
+	static int SetArrayNameData(TArray<FNameStrings>& NameStringsArray, const FName& InName, const FString& InString, ESetCmd SetCmd = ESetCmd::Set);
 
 };
-
 
 
 
@@ -125,19 +177,19 @@ struct FSetIndexInt
 
 	/** * 设置操作符 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SetCmd")
-	ESetCmd SetCmd;
+	ESetCmd SetCmd = ESetCmd::Set;
 
 	/** * 索引 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Index")
-	int Index;
+	int Index = -1;
 
 	/** * 数值 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Num")
-	int Num;
+	int Num = 0;
 
+	FSetIndexInt() = default;
 
-	FSetIndexInt(ESetCmd InSetCmd = ESetCmd::Set, int InIndex = -1, int InNum = 0)
-		: SetCmd(InSetCmd), Index(InIndex), Num(InNum) {}
+	FSetIndexInt(ESetCmd InSetCmd, int InIndex, int InNum) : SetCmd(InSetCmd), Index(InIndex), Num(InNum) {}
 };
 
 
@@ -171,21 +223,21 @@ struct FStringColor
 
 	/** * 获取名字字符串组对应名字索引
 	* 名字字符串组结构 获取索引数据
-	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* Name 对应名字字符串组的名字 (InStringColorArray.Name)
 	* return 返回获取索引
 	*/
 	static int GetArrayNameIndex(const TArray<FStringColor>& InStringColorArray, const FName& InName);
 
 	/** * 获取名字字符串组对应名字索引数据
 	* 名字字符串组结构 获取索引数据
-	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* Name 对应名字字符串组的名字 (InStringColorArray.Name)
 	* return 返回获取索引字符串值
 	*/
 	static FStringColor GetArrayNameIndexData(const TArray<FStringColor>& InStringColorArray, const FName& InName);
 	
-	/** * 设置NameStringsArray Cmd: Set,SetAll,Add,AddU,Remove,RemoveAll
+	/** * 设置 Cmd: Set,SetAll,Add,AddU,Remove,RemoveAll
 	* 名字字符串组结构 用来修改解析的
-	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* Name 对应名字字符串组的名字 (InStringColorArray.Name)
 	* return 返回获取索引  C++ 结构体里如何添加该结构体Array时的函数
 	*/
 	static int SetArrayNameData(TArray<FStringColor>& InStringColorArray, const FStringColor& InStringColor);
@@ -250,28 +302,28 @@ public:
 
 	/** * 获取名字字符串组对应名字索引
 	* 名字字符串组结构 获取索引数据
-	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* Name 对应名字字符串组的名字 (InStringImageDataArray,Name)
 	* return 返回获取索引
 	*/
 	static int GetArrayNameIndex(const TArray<FStringImageData>& InStringImageDataArray, const FName& InName);
 
 	/** * 获取名字字符串组对应名字索引数据
 	* 名字字符串组结构 获取索引数据
-	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* Name 对应名字字符串组的名字 (InStringImageDataArray.Name)
 	* return 返回获取索引字符串值
 	*/
 	static FStringImageData GetArrayNameIndexData(const TArray<FStringImageData>& InStringImageDataArray, const FName& InName);
 
-	/** * 设置NameStringsArray Cmd: Set,SetAll,Add,AddU,Remove,RemoveAll
+	/** * 设置Array Cmd: Set,SetAll,Add,AddU,Remove,RemoveAll
 	* 名字字符串组结构 用来修改解析的
-	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* Name 对应名字字符串组的名字 (InStringImageDataArray.Name)
 	* return 返回获取索引  C++ 结构体里如何添加该结构体Array时的函数
 	*/
 	static int SetArrayNameData(TArray<FStringImageData>& InStringImageDataArray, const FStringImageData& InStringImageData);
 
-	/** * 设置NameStringsArray Cmd: Set,SetAll,Add,AddU,Remove,RemoveAll
+	/** * 设置Array Cmd: Set,SetAll,Add,AddU,Remove,RemoveAll
 	* 名字字符串组结构 用来修改解析的
-	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* Name 对应名字字符串组的名字 (InStringImageDataArray.Name)
 	* return 返回获取索引  C++ 结构体里如何添加该结构体Array时的函数
 	*/
 	static bool RemoveArrayNameData(TArray<FStringImageData>& InStringImageDataArray, const FName& InName);
@@ -279,3 +331,22 @@ public:
 };
 
 
+/** * Buff结构体 */
+USTRUCT(BlueprintType)
+struct FBuffStruct
+{
+	GENERATED_BODY()
+
+	/** * 设置操作符 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buff")
+	FName Name;
+
+	/** * 索引 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buff")
+	float DestroyTimeMax = 0.0f;
+
+	/** * 数值 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buff")
+	TSoftObjectPtr<UObject> IconImage = TSoftObjectPtr<UObject>(FString(TEXT("/Script/Engine.Texture2D'/ResourcesExpansions/Textures/Touch/NL_Textuer.NL_Textuer'")));
+
+};
