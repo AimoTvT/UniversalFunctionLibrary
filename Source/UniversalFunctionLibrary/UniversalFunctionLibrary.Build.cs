@@ -53,6 +53,8 @@ public class UniversalFunctionLibrary : ModuleRules
 				"Slate",
 				"SlateCore",
 				"UMG",
+                "InputCore",
+                "EnhancedInput",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

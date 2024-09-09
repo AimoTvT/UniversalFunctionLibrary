@@ -21,6 +21,7 @@
 #include "Engine/Engine.h"
 #include "Engine/EngineTypes.h"
 #include "Config/UniversalStruct.h"
+#include "Engine/CompositeDataTable.h"
 
 
 #include "UniversalFunctionLibrarys.generated.h"
@@ -38,6 +39,9 @@ class UNIVERSALFUNCTIONLIBRARY_API UUniversalFunctionLibrarys : public UBlueprin
 
 public:
 	UUniversalFunctionLibrarys();
+
+	
+
 
 	/** * ESetCmdToString
 	* InSetCmd 枚举
@@ -81,6 +85,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Load")
 	static UObject* StringLoadObjectAsset(const FString& PathString);
 
+	/** * 
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Load")
+	static UClass* AssetDataLoadClass(const FAssetData& AssetData);
+
+
+	
 
 	/** * 解析字符串 */
 
@@ -383,29 +394,29 @@ public:
 
 	/** * 获取名字字符串组对应名字索引
 	* 名字字符串组结构 获取索引数据
-	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* Name 对应名字字符串组的名字 (StringStrings.Name)
 	* return 返回获取索引
 	*/
 	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
-	static int GetNameStringsIndex(const TArray<FNameStrings>& NameStringsArray, const FString& Name);
+	static int GetStringStringsIndex(const TArray<FStringStrings>& StringStringsArray, const FString& Name);
 
 	/** * 获取名字字符串组对应名字索引数据
 	* 名字字符串组结构 获取索引数据
-	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* Name 对应名字字符串组的名字 (StringStrings.Name)
 	* return 返回获取索引字符串值
 	*/
 	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
-	static FString GetNameStringsIndexData(const TArray<FNameStrings>& NameStringsArray, const FString& Name);
+	static FString GetStringStringsIndexData(const TArray<FStringStrings>& StringStringsArray, const FString& Name);
 
-	/** * 设置NameStringsArray Cmd: Set,SetAll,Add,AddU,Remove,RemoveAll 
+	/** * 设置StringStringsArray Cmd: Set,SetAll,Add,AddU,Remove,RemoveAll 
 	* 名字字符串组结构 用来修改解析的
-	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* Name 对应名字字符串组的名字 (StringStrings.Name)
 	* InString 是输入的值
 	* Cmd 是操作指令,Set,SetAll,Add,AddUnique,Remove,RemoveAll
 	* return 返回获取索引
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
-	static int SetNameStringsArray(TArray<FNameStrings>& NameStringsArray, const FString& Name, const FString& InString, ESetCmd SetCmd = ESetCmd::Set);
+	static int SetStringStringsArray(TArray<FStringStrings>& StringStringsArray, const FString& Name, const FString& InString, ESetCmd SetCmd = ESetCmd::Set);
 
 	/** * 获取附近落地位置,射线获取玩家附加可以落点的位置
 	* Location 初始射线位置
@@ -439,7 +450,7 @@ public:
 
 	/** * 获取名字字符串组对应名字索引
 	* 名字字符串组结构 获取索引数据
-	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* Name 对应名字字符串组的名字 (Name)
 	* return 返回获取索引
 	*/
 	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
@@ -447,15 +458,15 @@ public:
 
 	/** * 获取名字字符串组对应名字索引数据
 	* 名字字符串组结构 获取索引数据
-	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* Name 对应名字字符串组的名字 (Name)
 	* return 返回获取索引字符串值
 	*/
 	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
 	static FStringColor GetStringColorsNameIndexData(const TArray<FStringColor>& InStringColorArray, const FName& InName);
 
-	/** * 设置NameStringsArray Cmd: Set,SetAll,Add,AddU,Remove,RemoveAll
+	/** * 设置Array Cmd: Set,SetAll,Add,AddU,Remove,RemoveAll
 	* 名字字符串组结构 用来修改解析的
-	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* Name 对应名字字符串组的名字 (Name)
 	* return 返回获取索引  C++ 结构体里如何添加该结构体Array时的函数
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
@@ -464,7 +475,7 @@ public:
 
 	/** * 获取名字字符串组对应名字索引
 	* 名字字符串组结构 获取索引数据
-	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* Name 对应名字字符串组的名字 (Name)
 	* return 返回获取索引
 	*/
 	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
@@ -472,15 +483,15 @@ public:
 
 	/** * 获取名字字符串组对应名字索引数据
 	* 名字字符串组结构 获取索引数据
-	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* Name 对应名字字符串组的名字 (Name)
 	* return 返回获取索引字符串值
 	*/
 	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
 	static FStringImageData GetStringImageDatasNameIndexData(const TArray<FStringImageData>& InStringImageDataArray, const FName& InName);
 
-	/** * 设置NameStringsArray Cmd: Set,SetAll,Add,AddU,Remove,RemoveAll
+	/** * 设置Array Cmd: Set,SetAll,Add,AddU,Remove,RemoveAll
 	* 名字字符串组结构 用来修改解析的
-	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* Name 对应名字字符串组的名字 (Name)
 	* return 返回获取索引  C++ 结构体里如何添加该结构体Array时的函数
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
@@ -488,27 +499,31 @@ public:
 
 	/** * 获取名字字符串组对应名字索引
 	* 名字字符串组结构 获取索引数据
-	* Name 对应名字字符串组的名字 (NameStrings.Name)
+	* Name 对应名字字符串组的名字 (Name)
 	* return 返回获取索引
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
 	static bool RemoveStringImageDatasName(UPARAM(ref) TArray<FStringImageData>& InStringImageDataArray, const FName& InName);
 
 	/** * 函数来生成一个带有偏置的随机数值
-	* Min 最小值
-	* Max 最大值	
-	* BiasFactor 0到1概率偏差值
+	* MinValue 最小值
+	* MaxValue 最大值	
+	* RareValue 0~10值越大值返回的随机值越接近最大值
 	* return 返回是否在限制内
 	*/
 	template< class T >
-	static T RandomBiasedValue(T Min, T Max, float BiasFactor)
+	static T GenerateWeightedRandom(T MinValue, T MaxValue, float RareValue)
 	{
-		BiasFactor = FMath::Pow(FMath::RandRange(0.0f, 1.0f), BiasFactor);
-		return Min + (Max - Min) * BiasFactor;
+		return FMath::Lerp(MaxValue, MinValue, FMath::Pow(FMath::FRand(), RareValue));;
 	}
-
+	/** * 函数来生成一个带有偏置的随机数值
+	* MinValue 最小值
+	* MaxValue 最大值
+	* RareValue 0~10值越大值返回的随机值越接近最大值
+	* return 返回是否在限制内
+	*/
 	UFUNCTION(BlueprintPure, Category = "Aimo|Static|Miscellaneous")
-	static float RandomBiasedValueFloat(float Min, float Max, float BiasFactor);
+	static float GenerateWeightedRandomFloat(float MinValue, float MaxValue, float RareValue);
 
 	/** * 获取字符串组有效值
 	* C++ 使用的,本插件自己使用的并不开放蓝图,不建议调用,所以并不再多解释
@@ -588,6 +603,24 @@ public:
 		return Index;
 	}
 
+	/** *
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|DataTable")
+	static bool CompositeDataTableAddDataTable(UCompositeDataTable* InCompositeDataTable, UDataTable* TableToAdd);
 
-	
-};
+	/** *
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|DataTable")
+	static bool CompositeDataTableRemoveDataTable(UCompositeDataTable* InCompositeDataTable, UDataTable* TableToRemove);
+
+
+	/** *
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
+	static TArray<FAssetData> FindPathAssets(const FName& directoryPath, bool bRecursive = false);
+
+	/** *
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
+	static TArray<FName> FindSubPaths(const FName& PathName, bool bRecursive = false);
+}; 
