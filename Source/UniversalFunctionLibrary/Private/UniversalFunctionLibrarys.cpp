@@ -1007,3 +1007,26 @@ TArray<FName> UUniversalFunctionLibrarys::FindSubPaths(const FName& PathName, bo
 	AssetRegistry.GetSubPaths(PathName, PathNames, bRecursive);
 	return PathNames;
 }
+
+bool UUniversalFunctionLibrarys::IsOwnerClient(AActor* InOwner)
+{
+	return (InOwner && InOwner->HasAuthority() && InOwner->GetRemoteRole() == ROLE_AutonomousProxy);
+}
+
+UActorComponent* UUniversalFunctionLibrarys::AddSoftActorComponent(AActor* InOwner, TSoftClassPtr<UActorComponent> InActorComponentSoftClassPtr)
+{
+	if (InOwner == nullptr || InActorComponentSoftClassPtr.IsNull())
+	{
+		return nullptr;
+	}
+	if (InActorComponentSoftClassPtr.IsValid() == false)
+	{
+		InActorComponentSoftClassPtr.LoadSynchronous();
+	}
+	UActorComponent* NewComponent = NewObject<UActorComponent>(InOwner, InActorComponentSoftClassPtr.Get());
+	if (NewComponent)
+	{
+		NewComponent->RegisterComponent();
+	}
+	return nullptr;
+}

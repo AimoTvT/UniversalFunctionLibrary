@@ -18,7 +18,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-
+#include "Animation/AnimInstance.h"
 
 #include "UniversalAnimMontage.generated.h"
 /**
