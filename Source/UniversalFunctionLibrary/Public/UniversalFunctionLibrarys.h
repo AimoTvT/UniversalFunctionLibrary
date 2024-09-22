@@ -22,7 +22,7 @@
 #include "Engine/EngineTypes.h"
 #include "Config/UniversalStruct.h"
 #include "Engine/CompositeDataTable.h"
-
+#include "AssetRegistry/AssetData.h"
 
 #include "UniversalFunctionLibrarys.generated.h"
 
@@ -623,4 +623,16 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
 	static TArray<FName> FindSubPaths(const FName& PathName, bool bRecursive = false);
+
+	/** * 获取拥有者是否拥有客户端
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
+	static bool IsOwnerClient(AActor* InOwner);
+
+
+	/** * 
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
+	static UActorComponent* AddSoftActorComponent(AActor* InOwner,TSoftClassPtr<UActorComponent> InActorComponentSoftClassPtr);
+	
 }; 

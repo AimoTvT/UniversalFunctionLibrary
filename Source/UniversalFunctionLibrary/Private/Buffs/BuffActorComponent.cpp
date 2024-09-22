@@ -16,6 +16,9 @@
 
 #include "Buffs/BuffActorComponent.h"
 #include "Buffs/BuffControllerComponent.h"
+#include "Engine/World.h"
+#include "GameFramework/Actor.h"
+#include "Runtime/Engine/Public/TimerManager.h"
 
 // Sets default values for this component's properties
 UBuffActorComponent::UBuffActorComponent()
@@ -73,7 +76,7 @@ void UBuffActorComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 void UBuffActorComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
 {
 	Super::OnComponentDestroyed(bDestroyingHierarchy);
-	OnComponentDestroy.Broadcast(this, bDestroyingHierarchy);
+	OnBuffComponentDestroyed.Broadcast(this, bDestroyingHierarchy);
 }
 
 

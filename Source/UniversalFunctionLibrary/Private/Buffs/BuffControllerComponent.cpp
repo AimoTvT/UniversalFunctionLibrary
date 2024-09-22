@@ -17,6 +17,7 @@
 
 #include "Buffs/BuffControllerComponent.h"
 #include "Buffs/BuffActorComponent.h"
+#include "GameFramework/Actor.h"
 
 // Sets default values for this component's properties
 UBuffControllerComponent::UBuffControllerComponent()
@@ -37,13 +38,13 @@ void UBuffControllerComponent::BeginPlay()
 	// ...
 	if (GetOwner())
 	{
-		TArray<UActorComponent*> ActorComponents;
-		GetOwner()->GetComponents(UBuffControllerComponent::StaticClass(), ActorComponents, false);
-		for (size_t i = 0; i < ActorComponents.Num(); i++)
+		TArray<UBuffActorComponent*> TBuffActorComponents;
+		GetOwner()->GetComponents(UBuffActorComponent::StaticClass(), TBuffActorComponents, false);
+		for (size_t i = 0; i < TBuffActorComponents.Num(); i++)
 		{
-			if (ActorComponents[i] && Cast<UBuffActorComponent>(ActorComponents[i]))
+			if (TBuffActorComponents[i])
 			{
-				AddBuffComponent(Cast<UBuffActorComponent>(ActorComponents[i]), false);
+				AddBuffComponent(TBuffActorComponents[i], false);
 			}
 		}
 	}
@@ -59,25 +60,25 @@ void UBuffControllerComponent::AddBuffComponent(UBuffActorComponent* InBuffActor
 		{
 			BuffActorComponents.Remove(InBuffActorComponent);
 			OnBuffActorComponent.Broadcast(InBuffActorComponent, 0);
-			if (InBuffActorComponent->OnComponentDestroy.IsAlreadyBound(this, &UBuffControllerComponent::ComponentDestroy_Event))
+			if (InBuffActorComponent->OnBuffComponentDestroyed.IsAlreadyBound(this, &UBuffControllerComponent::BuffComponentDestroy_Event))
 			{
-				InBuffActorComponent->OnComponentDestroy.RemoveDynamic(this, &UBuffControllerComponent::ComponentDestroy_Event);
+				InBuffActorComponent->OnBuffComponentDestroyed.RemoveDynamic(this, &UBuffControllerComponent::BuffComponentDestroy_Event);
 			}
 		}
 		else
 		{
 			BuffActorComponents.Add(InBuffActorComponent);
 			OnBuffActorComponent.Broadcast(InBuffActorComponent, 1);
-			if (!InBuffActorComponent->OnComponentDestroy.IsAlreadyBound(this, &UBuffControllerComponent::ComponentDestroy_Event))
+			if (!InBuffActorComponent->OnBuffComponentDestroyed.IsAlreadyBound(this, &UBuffControllerComponent::BuffComponentDestroy_Event))
 			{
-				InBuffActorComponent->OnComponentDestroy.AddDynamic(this, &UBuffControllerComponent::ComponentDestroy_Event);
+				InBuffActorComponent->OnBuffComponentDestroyed.AddDynamic(this, &UBuffControllerComponent::BuffComponentDestroy_Event);
 			}
 		}
 	}
 }
 
 
-void UBuffControllerComponent::ComponentDestroy_Event(UBuffActorComponent* InBuffActorComponent, bool bDestroyingHierarchy)
+void UBuffControllerComponent::BuffComponentDestroy_Event(UBuffActorComponent* InBuffActorComponent, bool bDestroyingHierarchy)
 {
 	if (InBuffActorComponent)
 	{

@@ -29,7 +29,7 @@ class UNIVERSALFUNCTIONLIBRARY_API UUniversalLibrarySystem : public UObject
 	GENERATED_BODY()
 	
 public:
-	UFUNCTION(BlueprintPure, DisplayName = "GUniversalLibrarySystem")
+	UFUNCTION(BlueprintPure, Category = "GUniversalLibrarySystem", DisplayName = "GUniversalLibrarySystem")
 	static UUniversalLibrarySystem* Get();
 
 	/** * * 委托宏1个输入 */

@@ -24,7 +24,7 @@
 
 class UBuffWidget;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UNIVERSALFUNCTIONLIBRARY_API UBuffActorComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -74,14 +74,14 @@ public:
 	TSoftClassPtr<UBuffWidget> BuffWidget = TSoftClassPtr<UBuffWidget>(FString(TEXT("/Script/UMGEditor.WidgetBlueprint'/UniversalFunctionLibrary/Buffs/Widgets/BP_BuffWidget.BP_BuffWidget_C'")));
 
 
-	/** * 互交定时器 */
+	/** * 定时器 */
 	UPROPERTY(BlueprintReadWrite, Category = "ItemActor")
 	FTimerHandle BuffTimerHandle;
 
 
 
 	/** * * 组件删除委托 */
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FComponentDestroy, UBuffActorComponent*, InBuffActorComponent, bool, bDestroyingHierarchy);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FBuffActorComponentDestroyedSignature, UBuffActorComponent*, InBuffActorComponent, bool, bDestroyingHierarchy);
 
 	/** * *  */
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FComponentName, UBuffActorComponent*, InBuffActorComponent, const FName&, InName);
@@ -94,7 +94,7 @@ public:
 
 	/** * * 组件删除委托 */
 	UPROPERTY(BlueprintAssignable, Category = "Component|On")
-	FComponentDestroy OnComponentDestroy;
+	FBuffActorComponentDestroyedSignature OnBuffComponentDestroyed;
 
 	/** * *  */
 	UPROPERTY(BlueprintAssignable, Category = "Component|On")

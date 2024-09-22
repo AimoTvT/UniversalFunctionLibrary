@@ -17,6 +17,8 @@
 #pragma once
 
 #include "Engine/DataTable.h"
+#include "Styling/SlateBrush.h"
+
 #include "UniversalStruct.generated.h"
 
 
@@ -350,3 +352,181 @@ struct FBuffStruct
 	TSoftObjectPtr<UObject> IconImage = TSoftObjectPtr<UObject>(FString(TEXT("/Script/Engine.Texture2D'/ResourcesExpansions/Textures/Touch/NL_Textuer.NL_Textuer'")));
 
 };
+
+/** * 索引浮点 */
+USTRUCT(BlueprintType)
+struct FIntFloat
+{
+	GENERATED_BODY()
+
+	/** * 索引 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IntFloat")
+	int Index = 0;
+
+
+	/** * 浮点 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IntFloat")
+	float Float = 0.0f;
+
+
+	FIntFloat() = default;
+
+	FIntFloat(int InIndex, float InFloat)
+		: Index(InIndex), Float(InFloat) {}
+
+	FIntFloat& operator+= (const FIntFloat& InIntFloat)
+	{
+		Float += InIntFloat.Float;
+		return *this;
+	}
+	FIntFloat& operator-= (const FIntFloat& InIntFloat)
+	{
+		Float -= InIntFloat.Float;
+		return *this;
+	}
+	FIntFloat& operator*= (const FIntFloat& InIntFloat)
+	{
+		Float *= InIntFloat.Float;
+		return *this;
+	}
+	FIntFloat& operator/= (const FIntFloat& InIntFloat)
+	{
+		if (FMath::IsNearlyZero(InIntFloat.Float))
+		{
+			Float = 0;
+		}
+		else
+		{
+			Float /= InIntFloat.Float;
+		}
+		return *this;
+	}
+
+	FIntFloat operator+ (const FIntFloat& InIntFloat) const
+	{
+		return FIntFloat(*this) += InIntFloat;
+	}
+	FIntFloat operator- (const FIntFloat& InIntFloat) const
+	{
+		return FIntFloat(*this) -= InIntFloat;
+	}
+	FIntFloat operator* (const FIntFloat& InIntFloat) const
+	{
+		return FIntFloat(*this) *= InIntFloat;
+	}
+	FIntFloat operator/ (const FIntFloat& InIntFloat) const
+	{
+		return FIntFloat(*this) /= InIntFloat;
+	}
+
+	static int GetArrayIndex(TArray<FIntFloat> IntFloats, int InIndex)
+	{
+		for (size_t i = 0; i < IntFloats.Num(); i++)
+		{
+			if (IntFloats[i].Index == InIndex)
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+
+};
+
+
+
+/** * 高级浮点型结构 */
+USTRUCT(BlueprintType)
+struct FAdvancedFloatStruct
+{
+	GENERATED_BODY()
+
+	/** *  */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AdvancedFloat")
+	float DefaultFloat = 0.0f;
+
+	/** *  */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AdvancedFloat")
+	float FinalFloat = 0.0f;
+
+	/** *  */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AdvancedFloat")
+	float AdditionalFloat = 0.0f;
+
+	/** *  */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AdvancedFloat")
+	float AdditionalFloatMultiple = 1.0f;
+
+	/** *  */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AdvancedFloat")
+	TArray<FIntFloat> AdditionalIntFloats;
+
+	/** *  */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AdvancedFloat")
+	TArray<FIntFloat> AdditionalIntFloatMultiples;
+
+
+	/** * 更新数据 */
+	void UpdatingData()
+	{
+		FinalFloat = (DefaultFloat + AdditionalFloat) * AdditionalFloatMultiple;
+	}
+
+	/** * 默认值 */
+	void SetDefaultFloat(float InFloat)
+	{
+		DefaultFloat = InFloat;
+		UpdatingData();
+	}
+
+	int AddIntFloat(FIntFloat IntFloat, bool Multiple = false, bool Additional = false)
+	{
+		TArray<FIntFloat>& IntFloatsRef = Multiple ? AdditionalIntFloatMultiples : AdditionalIntFloats;
+		float& FloatRef = Multiple ? AdditionalFloatMultiple : AdditionalFloat;
+		int Index = FIntFloat::GetArrayIndex(IntFloatsRef, IntFloat.Index);
+		if (Index != -1)
+		{
+			if (Additional)
+			{
+				IntFloatsRef[Index] += IntFloat;
+				FloatRef += IntFloat.Float;
+				UpdatingData();
+				return Index;
+			}
+			if (IntFloat.Float != 0.0f)
+			{
+				FloatRef -= IntFloatsRef[Index].Float;
+				IntFloatsRef[Index] = IntFloat;
+				FloatRef += IntFloatsRef[Index].Float;
+				UpdatingData();
+				return Index;
+			}
+			FloatRef -= IntFloatsRef[Index].Float;
+			IntFloatsRef.RemoveAt(Index);
+			UpdatingData();
+			return -1;
+		}
+		Index = IntFloatsRef.Add(IntFloat);
+		FloatRef += IntFloatsRef[Index].Float;
+		UpdatingData();
+		return Index;
+	}
+
+	bool RemoveIntFloat(int InIndex, bool Multiple = false)
+	{
+		TArray<FIntFloat>& IntFloatsRef = Multiple ? AdditionalIntFloatMultiples : AdditionalIntFloats;
+		float& FloatRef = Multiple ? AdditionalFloatMultiple : AdditionalFloat;
+		int Index = FIntFloat::GetArrayIndex(IntFloatsRef, InIndex);
+		if (Index != -1)
+		{
+			FloatRef -= IntFloatsRef[Index].Float;
+			IntFloatsRef.RemoveAt(Index);
+			UpdatingData();
+			return true;
+		}
+		return false;
+	}
+
+
+};
+

@@ -44,11 +44,11 @@ public:
 	FBuffActorComponent OnBuffActorComponent;
 
 	/** * * 组件删除委托 */
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FComponentDestroy, UBuffControllerComponent*, InBuffControllerComponent, bool, bDestroyingHierarchy);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FBuffControllerComponentDestroyed, UBuffControllerComponent*, InBuffControllerComponent, bool, bDestroyingHierarchy);
 
 	/** * * 组件删除委托 */
 	UPROPERTY(BlueprintAssignable, Category = "Component|On")
-	FComponentDestroy OnComponentDestroy;
+	FBuffControllerComponentDestroyed OnBuffControllerComponentDestroyed;
 
 protected:
 	// Called when the game starts
@@ -63,7 +63,7 @@ public:
 
 	/** * */
 	UFUNCTION(BlueprintCallable, Category = "Buff|Function")
-	virtual void ComponentDestroy_Event(UBuffActorComponent* InBuffActorComponent, bool bDestroyingHierarchy);
+	virtual void BuffComponentDestroy_Event(UBuffActorComponent* InBuffActorComponent, bool bDestroyingHierarchy);
 
 		
 };
