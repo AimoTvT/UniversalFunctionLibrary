@@ -555,7 +555,7 @@ TArray<UActorComponent*> UUniversalFunctionLibrarys::GetActorAllComponents(const
 	{
 		for (size_t i = 0; i < Components.Num(); i++)
 		{
-			if (Components[i] != nullptr)
+			if (Components[i])
 			{
 				ActorComponents.Add(Components[i]);
 			}
@@ -568,7 +568,7 @@ TArray<UActorComponent*> UUniversalFunctionLibrarys::GetActorAllComponents(const
 		{
 			for (size_t j = 0; j < Components.Num(); j++)
 			{
-				if (Components[j] != nullptr)
+				if (Components[j])
 				{
 					ActorComponents.Add(Components[j]);
 				}
@@ -686,7 +686,7 @@ int UUniversalFunctionLibrarys::SetStringStringsArray(TArray<FStringStrings>& St
 	return FStringStrings::SetArrayNameData(StringStringsArray, Name, InString, SetCmd);
 }
 
-FVector UUniversalFunctionLibrarys::FrontScopeRay(UObject* World, const FVector& Location, const FVector& Forward, const TEnumAsByte<ETraceTypeQuery>& TraceTypeQuerys, const TArray<AActor*>& ActorsToIgnore, float Distance, float DropDistance, float Scope, int Num)
+FVector UUniversalFunctionLibrarys::FrontScopeRay(UObject* World, const FVector& Location, const FVector& Forward, const TEnumAsByte<ETraceTypeQuery>& TraceTypeQuerys, const TArray<AActor*>& ActorsToIgnore, float Distance, float Scope, float DropDistance, int Num)
 {
 	FHitResult OutHit;
 	if (World)

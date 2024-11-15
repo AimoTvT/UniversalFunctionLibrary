@@ -115,9 +115,9 @@ protected:
 
 
 	/** * * 重写同步策略 */
-	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void OnComponentDestroyed(bool bDestroyingHierarchy) override;
+	virtual void OnComponentDestroyed(bool bDestroyingHierarchy) override;
 
 public:	
 	// Called every frame
