@@ -20,6 +20,7 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Components/Image.h"
 #include "Components/SizeBox.h"
+#include "Components/TextBlock.h"
 #include "Engine/Texture2D.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Materials/MaterialInstanceDynamic.h"
@@ -143,5 +144,27 @@ TSoftClassPtr<UUserWidget> UUniversalWidgetFunctionLibrary::StringCastTSoftUserW
 		return TSoftClassPtr<UUserWidget>(StringCastTSoftUserWidgetClassPtr(PathString.Mid(0, PathString.Len() - 1) + TEXT("_C'")));
 	}
 	return TSoftClassPtr<UUserWidget>(PathString);
+}
+
+void UUniversalWidgetFunctionLibrary::SetTextBlockSize(UTextBlock* InTextBlock, float InSize)
+{
+	if (InTextBlock)
+	{
+		FSlateFontInfo SlateFontInfo = InTextBlock->GetFont();
+		SlateFontInfo.Size = InSize;
+		InTextBlock->SetFont(SlateFontInfo);
+	}
+}
+
+void UUniversalWidgetFunctionLibrary::SetTextBlockColors(UTextBlock* InTextBlock, FSlateColor InColorAndOpacity, FLinearColor InLinearColor, int InOutlineSize)
+{
+	if (InTextBlock)
+	{
+		InTextBlock->SetColorAndOpacity(InColorAndOpacity);
+		FSlateFontInfo SlateFontInfo = InTextBlock->GetFont();
+		SlateFontInfo.OutlineSettings.OutlineSize = InOutlineSize;
+		SlateFontInfo.OutlineSettings.OutlineColor = InLinearColor;
+		InTextBlock->SetFont(SlateFontInfo);
+	}
 }
 

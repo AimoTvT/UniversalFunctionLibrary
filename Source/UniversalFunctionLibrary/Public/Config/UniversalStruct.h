@@ -18,6 +18,7 @@
 
 #include "Engine/DataTable.h"
 #include "Styling/SlateBrush.h"
+#include "Config/UniversalEnum.h"
 
 #include "UniversalStruct.generated.h"
 
@@ -41,36 +42,6 @@ struct FFloat4
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "D")
 	float D = 0.0f;
 
-
-};
-
-
-/** * 设置操作命令,Set,SetAll,Add,AddUnique,Remove,RemoveAll */
-UENUM(BlueprintType)
-enum class ESetCmd :uint8
-{
-	/** * 唯一ID //UID */
-	Set = 0			UMETA(DisplayName = "Set"),
-	SetAll = 1			UMETA(DisplayName = "SetAll"),
-	Add = 2			UMETA(DisplayName = "Add"),
-	AddUnique = 3			UMETA(DisplayName = "AddUnique"),
-	Remove = 4			UMETA(DisplayName = "Remove"),
-	RemoveAll = 5			UMETA(DisplayName = "RemoveAll"),
-	Swap = 6			UMETA(DisplayName = "Swap"),
-	SwapOther = 7			UMETA(DisplayName = "SwapOther")
-
-};
-
-
-/** * 运算符号枚举 Addition == "+",Subtraction == "-",Multiplication == "*",Division == "/" */
-UENUM(BlueprintType)
-enum class EArithmeticOperator :uint8
-{
-	/** * 唯一ID //UID */
-	Addition = 0			UMETA(DisplayName = "Addition"),
-	Subtraction = 1			UMETA(DisplayName = "Subtraction"),
-	Multiplication = 2			UMETA(DisplayName = "Multiplication"),
-	Division = 3			UMETA(DisplayName = "Division")
 
 };
 
@@ -530,3 +501,29 @@ struct FAdvancedFloatStruct
 
 };
 
+
+
+
+
+USTRUCT(BlueprintType)
+struct FActorSaveData
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(VisibleAnywhere, Category = "SavedData")
+	FSoftObjectPath SoftActorClassPath;
+
+	UPROPERTY(VisibleAnywhere, Category = "SavedData")
+	FTransform ActorTransform;
+
+	UPROPERTY(VisibleAnywhere, Category = "SavedData")
+	TArray<uint8> ActorSerializedData;
+
+	FActorSaveData() = default;
+
+	FActorSaveData(const FSoftObjectPath& InSoftActorClassPath, const FTransform& InActorTransform, const TArray<uint8>& InActorSerializedData)
+		: SoftActorClassPath(InSoftActorClassPath), ActorTransform(InActorTransform), ActorSerializedData(InActorSerializedData) {}
+
+};

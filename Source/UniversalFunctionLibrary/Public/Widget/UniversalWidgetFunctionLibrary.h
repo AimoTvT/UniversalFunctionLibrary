@@ -101,4 +101,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Cast")
 	static TSoftClassPtr<UUserWidget> StringCastTSoftUserWidgetClassPtr(const FString& PathString);
 
+
+	/** *
+	*
+	*
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Cast")
+	static void SetTextBlockSize(UTextBlock* InTextBlock, float InSize = 24.0f);
+
+	/** * 
+	* 
+	* 
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Cast")
+	static void SetTextBlockColors(UTextBlock* InTextBlock, FSlateColor InColorAndOpacity, FLinearColor InLinearColor, int InOutlineSize = 1);
+
 };

@@ -424,13 +424,13 @@ public:
 	* TraceTypeQuerys 响应的射线类型
 	* ActorsToIgnore 忽略的演员组
 	* Distance 射线距离
-	* DropDistance 射线的落下的距离
 	* Scope 射线范围
+	* DropDistance 射线的落下的距离
 	* Num 重试次数
 	* return 返回最终位置
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
-	static FVector FrontScopeRay(UObject* World, const FVector& Location, const FVector& Forward, const TEnumAsByte<ETraceTypeQuery>& TraceTypeQuerys, const TArray<AActor*>& ActorsToIgnore, float Distance = 100, float DropDistance = 200, float Scope = 80, int Num = 22);
+	static FVector FrontScopeRay(UObject* World, const FVector& Location, const FVector& Forward, const TEnumAsByte<ETraceTypeQuery>& TraceTypeQuerys, const TArray<AActor*>& ActorsToIgnore, float Distance = 100, float Scope = 80, float DropDistance = 200, int Num = 22);
 
 	/** * 获取XY限制大小 
 	* X,Y 是大小
