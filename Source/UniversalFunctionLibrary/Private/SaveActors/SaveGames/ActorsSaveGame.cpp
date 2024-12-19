@@ -41,19 +41,19 @@ int UActorsSaveGame::SaveActors(const TArray<AActor*>& InAllActors)
         UE_LOG(LogTemp, Log, TEXT("[%s][Add] AllActors Num : %d"), *GetName(), InAllActors.Num());
         return 0;
     }
-    TArray<uint8> SerializedData;
-    FMemoryWriter Writer(SerializedData, true);
-    FObjectAndNameAsStringProxyArchive Ar(Writer, false);
 
-    // 设置翻译器标识
-    Ar.ArIsSaveGame = true;
-    Ar.ArNoDelta = true;
 
     for (size_t i = 0; i < InAllActors.Num(); i++)
     {
         AActor* Actor = InAllActors[i];
         if (Actor)
         {
+            TArray<uint8> SerializedData;
+            FMemoryWriter Writer(SerializedData, true);
+            FObjectAndNameAsStringProxyArchive Ar(Writer, false);
+            // 设置翻译器标识
+            Ar.ArIsSaveGame = true;
+            Ar.ArNoDelta = true;
             // 序列化 Actor 数据
             Actor->Serialize(Ar);
             ActorSaveData.Add(FActorSaveData(Actor->GetClass(), Actor->GetActorTransform(), SerializedData));
@@ -86,8 +86,6 @@ int UActorsSaveGame::LoadActors(bool bRemoveSaveActor)
         }
         UE_LOG(LogTemp, Log, TEXT("[%s][RemoveAllSaveTagActors] Remove SaveActors Num: %d"), *GetName(), AllActors.Num());
     }
-
-    TArray<uint8> SerializedData;
     AActor* NewActor;
     int ActorNum = 0;
 
@@ -109,6 +107,8 @@ int UActorsSaveGame::LoadActors(bool bRemoveSaveActor)
         // 对 Actor 进行初始化
         if (NewActor)
         {
+
+            TArray<uint8> SerializedData;
             // 使用 FMemoryReader 反序列化数据
             FMemoryReader Reader(ActorSaveData[i].ActorSerializedData, true);
             FObjectAndNameAsStringProxyArchive Ar(Reader, false);

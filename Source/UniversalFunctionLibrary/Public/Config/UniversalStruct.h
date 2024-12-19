@@ -318,9 +318,9 @@ struct FBuffStruct
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buff")
 	float DestroyTimeMax = 0.0f;
 
-	/** * 数值 */
+	/** *  */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buff")
-	TSoftObjectPtr<UObject> IconImage = TSoftObjectPtr<UObject>(FString(TEXT("/Script/Engine.Texture2D'/ResourcesExpansions/Textures/Touch/NL_Textuer.NL_Textuer'")));
+	TSoftObjectPtr<UObject> IconImage = TSoftObjectPtr<UObject>(FString(TEXT("/Script/Engine.Texture2D'/ResourcesExpansions/Textures/Touch/T_NL.T_NL'")));
 
 };
 

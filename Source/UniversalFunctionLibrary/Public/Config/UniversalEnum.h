@@ -19,7 +19,27 @@
 
 #include "UniversalEnum.generated.h"
 
+/** *  */
+UENUM(BlueprintType)
+enum class EAddMultipleEnum :uint8
+{
+	/** * 添加 */
+	Add = 0			UMETA(DisplayName = "添加"),
+	/** * 倍数 */
+	Multiple = 1	UMETA(DisplayName = "倍数")
+};
 
+/** *  */
+UENUM(BlueprintType)
+enum class EAddSetMultipleEnum :uint8
+{
+	/** * 添加 */
+	Add = 0			UMETA(DisplayName = "添加"),
+	/** * 设置 */
+	Set = 1			UMETA(DisplayName = "设置"),
+	/** * 倍数 */
+	Multiple = 2	UMETA(DisplayName = "倍数")
+};
 
 /** * 设置操作命令,Set,SetAll,Add,AddUnique,Remove,RemoveAll */
 UENUM(BlueprintType)

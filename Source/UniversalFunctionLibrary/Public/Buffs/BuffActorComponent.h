@@ -67,7 +67,7 @@ public:
 
 	/** *  */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buff", meta = (DisplayThumbnail = true, AllowedClasses = "/Script/Engine.Texture,/Script/Engine.MaterialInterface,/Script/Engine.SlateTextureAtlasInterface", DisallowedClasses = "/Script/MediaAssets.MediaTexture"))
-	TSoftObjectPtr<UObject> IconSoftObject = TSoftObjectPtr<UObject>(FString(TEXT("/Script/Engine.Texture2D'/ResourcesExpansions/Textures/Touch/NL_Textuer.NL_Textuer'")));
+	TSoftObjectPtr<UObject> IconSoftObject = TSoftObjectPtr<UObject>(FString(TEXT("/Script/Engine.Texture2D'/ResourcesExpansions/Textures/Touch/T_NL.T_NL'")));
 
 	/** *  */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buff")

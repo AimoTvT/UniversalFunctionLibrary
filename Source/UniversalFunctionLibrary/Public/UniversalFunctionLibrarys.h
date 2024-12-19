@@ -635,4 +635,142 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Aimo|Static|Miscellaneous")
 	static UActorComponent* AddSoftActorComponent(AActor* InOwner,TSoftClassPtr<UActorComponent> InActorComponentSoftClassPtr);
 	
+
+
+	/** *
+	*/
+	//UFUNCTION(BlueprintCallable, Category = "Multithreading")
+	//static void PerformHeavyTaskAsync1(UObject* InObject, FName TaskAsyncFunction, FName ReturnFunction)
+	//{
+	//	if (InObject == nullptr)
+	//	{
+	//		UE_LOG(LogTemp, Log, TEXT("InObject = Null")); 
+	//		return;
+	//	}
+	//	// 启动一个异步任务来执行繁重的计算
+	//	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [InObject, TaskAsyncFunction, ReturnFunction]()
+	//		{
+
+	//			if (InObject && !TaskAsyncFunction.IsNone())
+	//			{
+	//				UFunction* BlueprintFunction = InObject->FindFunction(TaskAsyncFunction);
+
+	//				if (BlueprintFunction)
+	//				{
+	//					// 4. 执行该函数
+	//					// 准备参数（假设蓝图函数接受一个 int32 参数）
+	//					//struct
+	//					//{
+	//					//	int32 Value;
+	//					//} Params;
+
+	//					//Params.Value = 42;  // 设置参数值
+
+	//					// 使用 FFrame 来调用蓝图中的函数
+	//					UE_LOG(LogTemp, Log, TEXT("%s->TaskAsync = Paly"), *InObject->GetName());
+	//					InObject->ProcessEvent(BlueprintFunction, nullptr);
+	//				}
+	//			}
+	//			UE_LOG(LogTemp, Log, TEXT("AsyncTask = GameThread = Play"));
+	//			if (!GWorld || !GWorld->HasBegunPlay())
+	//			{
+	//				UE_LOG(LogTemp, Log, TEXT("Editor or Game is closing, stopping thread..."));
+	//				return;  // 退出后台任务
+	//			}
+	//			// 执行计算完之后的回调（返回主线程）
+	//			AsyncTask(ENamedThreads::GameThread, [InObject, ReturnFunction]()
+	//				{
+	//					// 在主线程执行结果处理
+	//					if (InObject && !ReturnFunction.IsNone())
+	//					{
+	//						UFunction* BlueprintFunction = InObject->FindFunction(ReturnFunction);
+
+	//						if (BlueprintFunction)
+	//						{
+	//							// 4. 执行该函数
+	//							// 准备参数（假设蓝图函数接受一个 int32 参数）
+	//							//struct
+	//							//{
+	//							//	int32 Value;
+	//							//} Params;
+
+	//							//Params.Value = 42;  // 设置参数值
+
+	//							// 使用 FFrame 来调用蓝图中的函数
+	//							InObject->ProcessEvent(BlueprintFunction, nullptr);
+	//						}
+	//						UE_LOG(LogTemp, Log, TEXT("%s->TaskAsync = End"), InObject ? *InObject->GetName() : TEXT("???"));
+	//					}
+	//				});
+	//		});
+	//}
+
+
+
+	//DECLARE_DYNAMIC_DELEGATE(FBlueprintDelegate);
+
+	//UFUNCTION(BlueprintCallable, Category = "Multithreading")
+	//static void PerformHeavyTaskAsyncBlueprintDelegate(FBlueprintDelegate BlueprintDelegateA, FBlueprintDelegate BlueprintDelegateB)
+	//{
+	//	// 启动一个异步任务来执行繁重的计算
+	//	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [BlueprintDelegateA, BlueprintDelegateB]()
+	//		{
+	//			//事件A是否绑定
+	//			if (BlueprintDelegateA.IsBound())
+	//			{
+	//				//事件A执行
+	//				BlueprintDelegateA.Execute();
+	//			}
+	//			//事件B是否 空 绑定,防止中途编辑器退出游戏
+	//			if (!BlueprintDelegateB.IsBound())
+	//			{
+	//				return;
+	//			}
+	//			// 执行计算完之后的回调（返回主线程）
+	//			AsyncTask(ENamedThreads::GameThread, [BlueprintDelegateB]()
+	//				{
+	//					//事件B是否绑定
+	//					if (BlueprintDelegateB.IsBound())
+	//					{
+	//						//事件B执行
+	//						BlueprintDelegateB.Execute();
+	//					}
+	//				});
+	//		});
+	//};
+
+
+	//// 定义一个带有一个 int 参数的委托
+	//DECLARE_DYNAMIC_DELEGATE_OneParam(FBlueprintDelegateInt, int32, Value);
+
+	//UFUNCTION(BlueprintCallable, Category = "Multithreading")
+	//static void PerformHeavyTaskAsyncBlueprintDelegateInt32(FBlueprintDelegateInt BlueprintDelegateA, int InNumA, FBlueprintDelegate BlueprintDelegateB)
+	//{
+	//	// 启动一个异步任务来执行繁重的计算
+	//	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [BlueprintDelegateA, InNumA, BlueprintDelegateB]()
+	//		{
+	//			//事件A是否绑定
+	//			if (BlueprintDelegateA.IsBound())
+	//			{
+	//				//事件A执行
+	//				BlueprintDelegateA.Execute(InNumA);
+	//			}
+	//			//事件B是否 空 绑定,防止中途编辑器退出游戏
+	//			if (!BlueprintDelegateB.IsBound())
+	//			{
+	//				return;
+	//			}
+	//			// 执行计算完之后的回调（返回主线程）
+	//			AsyncTask(ENamedThreads::GameThread, [BlueprintDelegateB]()
+	//				{
+	//					//事件B是否绑定
+	//					if (BlueprintDelegateB.IsBound())
+	//					{
+	//						//事件B执行
+	//						BlueprintDelegateB.Execute();
+	//					}
+	//				});
+	//		});
+	//};
+
 }; 
